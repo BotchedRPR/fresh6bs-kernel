@@ -1,0 +1,60 @@
+/*
+ * SAMSUNG EXYNOS SoC EMS device tree source
+ *
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd.
+ *             http://www.samsung.com
+ *
+ * SAMSUNG EXYNOS SoC EMS device nodes are listed in this file.
+ * EXYNOS based board files should include this file.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ *
+ */
+#include <dt-bindings/soc/samsung/ems.h>
+#include "sets.dtsi"
+
+/ {
+	ems {
+		compatible = "samsung,ems";
+		status = "okay";
+
+		pe-list {
+			#define CPU_CL0 "0-1"
+
+			list@0 {
+				cpus = CPU_CL0;
+			};
+		};
+
+		cpu-selection-domain {
+			ananke0 {
+				cpus = "0-1";
+			};
+		};
+
+		ego {
+			thread-run-on = "0-1";
+
+			domain@0 {
+				cpus = "0-1";
+				ratio = < 1000 >;
+			};
+		};
+
+		emstune {
+			boot-set = <&boot_set>;
+
+			mode0 {
+				desc = "normal";
+
+				level0 {
+					base = <&set0>;
+					set = <&set0>;
+				};
+			};
+		};
+	};
+
+};

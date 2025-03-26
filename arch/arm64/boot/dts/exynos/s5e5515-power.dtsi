@@ -1,0 +1,27 @@
+/*
+ * SAMSUNG EXYNOS9935 SoC DVFS Manager device tree source
+ *
+ * Copyright (c) 2014 Samsung Electronics Co., Ltd.
+ *		http://www.samsung.com
+ *
+ * SAMSUNG EXYNOS9935 SoC device nodes are listed in this file.
+ * EXYNOS based board files can include this file and provide
+ * values for board specfic bindings.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+
+/ {
+	exynos-ect {
+		compatible = "samsung,exynos-ect";
+		memory-region = <&ect_binary>;
+	};
+
+	acpm_dvfs {
+		compatible = "samsung,exynos-acpm-dvfs";
+		acpm-ipc-channel = <5>;
+	};
+};

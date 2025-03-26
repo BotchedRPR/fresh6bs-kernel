@@ -1,0 +1,64 @@
+# drivers/samsung/debug/Kconfig
+#
+# Copyright (c) 2010-2020 Samsung Electronics Co., Ltd.
+#               http://www.samsung.com/
+#
+# Licensed under GPLv2
+
+menu "Samsung TN Extension Feature"
+config SEC_EXT
+	bool "Samsung TN extension Feature"
+	default y
+
+menuconfig SEC_DEBUG
+	tristate "Enable Samsung Debugging features"
+	default n
+
+config SEC_REBOOT
+	tristate "Enable TN reboot features"
+	default n
+	help
+	  Samsung TN reboot extension Feature. Do additional work when reboot.
+
+config SEC_KEY_NOTIFIER
+	tristate "Enable Samsung key event notifier"
+	default n
+	help
+	  Samsung Key input event notifier
+
+config SEC_BOOTSTAT
+	tristate "Enable TN Bootstat logging"
+	depends on SEC_EXT
+	default n
+	help
+	  This adds support for Samsung boot-stat
+	  To compile this driver as a module, choose M here.
+
+config DRV_SAMSUNG
+	tristate "Samsung sec class/sysfs Feature"
+	depends on SEC_EXT
+	default n
+	help
+	  Samsung sysfs name 'sec' directory create.
+
+comment "Samsung TN Build Options"
+config SEC_FACTORY
+	bool "SAMSUNG Factory build option"
+	depends on SEC_EXT
+	default n
+	help
+	  Include some codes for Factory binary.
+	  This option is enabled by Factory build option.
+	  In samsung build script, '-F' enables this option.
+
+config SAMSUNG_PRODUCT_SHIP
+	bool "set up for product shipping"
+	depends on SEC_EXT
+	default n
+	help
+	  This option is enabled by SHIP build option.
+	  In samsung build script, '-s' enables this option.
+	  
+endmenu
+source "drivers/samsung/misc/Kconfig"
+source "drivers/samsung/pm/Kconfig"

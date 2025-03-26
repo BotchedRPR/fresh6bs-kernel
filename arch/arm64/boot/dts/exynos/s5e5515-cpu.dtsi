@@ -1,0 +1,208 @@
+/*
+* SAMSUNG EXYNOS5515 SoC device tree source
+*
+* Copyright (c) 2014 Samsung Electronics Co., Ltd.
+*		http://www.samsung.com
+*
+* SAMSUNG EXYNOS5515 SoC device nodes are listed in this file.
+* EXYNOS based board files can include this file and provide
+* values for board specfic bindings.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*/
+
+
+#include <dt-bindings/soc/samsung/cpupm.h>
+#include <dt-bindings/soc/samsung/s5e5515-dm.h>
+
+/ {
+	arm-pmu {
+		compatible = "arm,armv8-pmuv3";
+		interrupts = <0 INTREQ__CPUCL0_PMUIRQ_0 4>,
+			      <0 INTREQ__CPUCL0_PMUIRQ_1 4>;
+		interrupt-affinity = <&cpu0>, <&cpu1>;
+	};
+
+	power-data {
+		#define CPUCL0_DMIPS_PER_MHZ 271
+		#define CPUCL0_DP_COEFF 125
+		#define CPUCL0_SP_COEFF 10
+
+		cpu {
+			ananke-power-data {
+				/* default power data */
+				cpus = "0-1";
+				capacity-dmips-mhz = <CPUCL0_DMIPS_PER_MHZ>;
+				dynamic-power-coefficient = <CPUCL0_DP_COEFF>;
+				static-power-coefficient = <CPUCL0_SP_COEFF>;
+
+				/* dhrystone to clang conversion ratio */
+				dhry-to-clang-dp-ratio = <820>;
+				dhry-to-clang-cap-ratio = <372>;
+			};
+		};
+	};
+
+	cpus {
+		#address-cells = <2>;
+		#size-cells = <0>;
+
+		cpu-map {
+			cluster0 {
+				core0 {
+					cpu = <&cpu0>;
+				};
+				core1 {
+					cpu = <&cpu0>;
+				};
+			};
+		};
+
+		cpu0: cpu@0000 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x000000>;
+			enable-method = "psci";
+			cpu-idle-states = <&BOOTCL_CPU_SLEEP>;
+		};
+		cpu1: cpu@0001 {
+			device_type = "cpu";
+			compatible = "arm,cortex-a55", "arm,armv8";
+			reg = <0x0 0x000100>;
+			enable-method = "psci";
+			cpu-idle-states = <&BOOTCL_CPU_SLEEP>;
+		};
+
+		idle-states {
+			entry-method = "arm,psci";
+
+			BOOTCL_CPU_SLEEP: bootcl-cpu-sleep {
+				idle-state-name = "c2";
+				compatible = "arm,idle-state";
+				arm,psci-suspend-param = <0x0010000>;
+				entry-latency-us = <35>;
+				exit-latency-us = <90>;
+				min-residency-us = <750>;
+				status = "okay";
+			};
+		};
+	};
+
+	exynos-cpupm {
+		compatible = "samsung,exynos-cpupm";
+		status = "okay";
+
+		cpd_cl0 {
+			device_type = "cpupm";
+			target-residency = <3000>;
+			cal-id = <0>;
+			type = <POWERMODE_TYPE_CLUSTER>;
+			siblings = "0-1";
+		};
+
+		sicd {
+			device_type = "cpupm";
+			target-residency = <3000>;
+			type = <POWERMODE_TYPE_SYSTEM>;
+			siblings = "0-1";
+			entry-allowed = "0-1";
+			deferred-enabled;
+		};
+
+		wakeup-mask {
+			wakeup-masks {
+				mask0 {
+					mask-reg-offset = <0x3c44>;
+					stat-reg-offset = <0x3c50>;
+					mask = <0x03000000>;
+				};
+				mask1 {
+					mask-reg-offset = <0x3c64>;
+					stat-reg-offset = <0x3c54>;
+					mask = <0x00>;
+				};
+			};
+			eint-wakeup-masks {
+				mask0 {
+					mask-reg-offset = <0x60c>;
+				};
+			};
+		};
+	};
+	
+	exynos-cpuhp {
+		compatible = "samsung,exynos-cpuhp";
+		status = "okay";
+	};
+
+	exynos-acme {
+		compatible = "samsung,exynos-acme";
+		status = "okay";
+
+		cpufreq_domain0: domain@0 {
+			device_type = "cpufreq-domain";
+			sibling-cpus = "0-1";
+			cal-id = <ACPM_DVFS_CPUCL0>;
+			dm-type = <DM_CPU_CL0>;
+
+			thread-run-on = "0-1";
+
+			/* PM QoS Class ID*/
+			pm_qos-min-class = <3>;
+			pm_qos-max-class = <4>;
+
+			#cooling-cells = <2>; /* min followed by max */
+			tz-cooling-name = "CPU";
+
+			max-freq = <1400000>;
+			min-freq = <200000>;
+
+			freq-table = < 200000
+						300000
+						400000
+						533000
+						667000
+						800000
+						1000000
+						1200000
+						1300000
+						1400000 >;
+
+
+			dm-constraints {
+				list = <&mif_perf>;
+			};
+		 };
+	};
+
+	dm-tables {
+		mif_perf: dm-table@0000 {
+			const-type = <CONSTRAINT_MIN>;
+			dm-slave = <DM_MIF>;
+			master-cal-id = <ACPM_DVFS_CPUCL0>;
+			slave-cal-id = <ACPM_DVFS_MIF>;
+			dynamic-disable;
+			normal {
+						/*  cpu     mif  */
+				table = <  200000       0
+						300000       0
+						400000       0
+						533000  421000
+						667000  421000
+						800000  676000
+						1000000 1014000
+						1200000 2093000
+						1300000 2093000
+						1400000 2093000 >;
+			};
+		};
+	};
+
+	freq-qos-tracer {
+		compatible = "samsung,freq-qos-tracer";
+		status = "okay";
+	};
+
+};

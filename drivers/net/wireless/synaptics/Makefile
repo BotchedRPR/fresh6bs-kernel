@@ -1,0 +1,1 @@
+obj-$(CONFIG_WLAN_VENDOR_SYN)  += bcmdhd/

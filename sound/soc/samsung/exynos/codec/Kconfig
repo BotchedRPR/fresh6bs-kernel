@@ -1,0 +1,4 @@
+config SND_SOC_SAMSUNG_CODEC
+	tristate
+	default n
+

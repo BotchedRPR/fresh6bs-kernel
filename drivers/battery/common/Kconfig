@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config BATTERY_SAMSUNG
+	tristate "samsung battery driver"
+	default n
+	help
+	  Say Y to include support for samsung battery driver
+	  This battery driver integrated all battery-related functions
+	  To see battery-related functions,
+	  refer to sec_charging_common.h
+
+config ENG_BATTERY_CONCEPT
+	bool "enable temp block"
+	default n
+	help
+	  Say Y here to enable
+	  support CONFIG_ENG_BATTERY_CONCEPT.
+	  It is for only in ENG bianry
+	  USER binary should disalbe this.

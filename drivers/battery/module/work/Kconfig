@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SB_WORK
+	tristate "support for work"
+	default n
+	depends on PM_SLEEP
+	help
+	 Say Y to include support for work

@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SB_ADC
+	tristate "Samsung Battery ADC"
+	default n
+	depends on IIO
+	help
+	  Say Y to use ADC api.

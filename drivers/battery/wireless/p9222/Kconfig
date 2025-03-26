@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config WIRELESS_P9222
+	tristate "P9222 battery charger support"
+	default n
+	depends on BATTERY_SAMSUNG && I2C
+	help
+		Say Y here to enable support for the p9222 charger
+		p9222 wireless charger driver.

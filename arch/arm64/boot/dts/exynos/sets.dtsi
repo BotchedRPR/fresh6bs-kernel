@@ -1,0 +1,4 @@
+#include "boot-set.dtsi"
+
+/* Normal mode */
+#include "set0.dtsi"

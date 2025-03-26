@@ -1,0 +1,23 @@
+/ {
+	/* booting exclusive set */
+	boot_set: boot_set {
+		/* Boosting margin applied to frequency selection */
+		freqboost {			/* LIT */
+			top-app			= < 5 >;
+		};
+
+		frt {	   			/* LIT */
+			active-ratio 		= < 25 >;
+		};
+
+		ecs { };
+
+		ecs_dynamic { };
+
+		fclamp {
+			monitor-group {
+				top-app         = < 1 >;
+			};
+		};
+	};
+};

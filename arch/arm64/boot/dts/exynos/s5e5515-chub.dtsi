@@ -1,0 +1,45 @@
+/{
+        contexthub_0: contexthub {
+                compatible = "samsung,exynos-nanohub";
+                memory-region = <&chub_rmem &lpd_rmem>;
+                /* INTREQ MAILBOX_AP2CHUB */
+                interrupts = <0 58 IRQ_TYPE_LEVEL_HIGH>, <0 87 IRQ_TYPE_LEVEL_HIGH>;
+                reg =   <0x0 0x12A30000 0x200>,
+                        <0x0 0x12A20000 0x200>,
+                        <0x0 0x10D00000 0x200000>,
+                        <0x0 0x10CD0000 0x100>,
+                        <0x0 0x12863300 0x10>,
+                        <0x0 0x10C20000 0x20>,
+                        <0x0 0x10C30000 0x20>,
+                        <0x0 0x10C40000 0x4000>,
+                        <0x0 0x10110000 0x2000>;
+                        /*<0x0 0x10C00000 0x1820>,
+                        <0x0 0x10C40000 0x3030>,
+                        <0x0 0x10C70000 0x10>,
+                        <0x0 0x10C60000 0x10>,
+                        <0x0 0x10C90000 0x50>,
+                        <0x0 0x10CA0000 0xF0>,
+                        <0x0 0x10CB0000 0xF0>,
+                        <0x0 0x10CC0000 0xF0>;*/
+                reg-names = "mailbox", "mailbox_apm_chub", "sram", "dumpgpr", "chub_reset",
+                            "baaw_c_chub", "baaw_d_chub", "sysreg_chub", "gpio_peri";
+                            /*"chub_dump_cmu", "chub_dump_sys",
+                            "chub_dump_wdt", "chub_dump_timer",
+                            "chub_dump_pwm", "chub_dump_usi0",
+                            "chub_dump_usi1", "chub_dump_usi2";*/
+                /* BAAW_C_CHUB to access mailbox, RTC, CMGP */
+                baaw,baaw_c_chub = <0x40300 0x40800 0x12900 0x80000003>;
+                                   /* start    end    remap */
+                baaw,baaw_d_chub = < 0x50000 0x50001 0x10000 0x80000003 /* chip id */
+                                     0x52860 0x52864 0x12860 0x80000003 /* APBIF */
+                                     0x53800 0x538F0 0x13800 0x80000003 /* SMMU */
+                                     0x53A60 0x53A70 0x13A60 0x80000003 /* GPIO_DPU */
+                                     0x50110 0x50112 0x10110 0x80000003 /* GPIO_PERI */
+                                     0x55410 0x55417 0x15410 0x80000003 /* CMU_TOP */
+                                   >;
+                /* os-type default, multi-os, one-binary supported */
+                os-type = "one-binary";
+                /* chub dfs governer */
+                chub-dfs-gov = "disabled";
+        };
+};

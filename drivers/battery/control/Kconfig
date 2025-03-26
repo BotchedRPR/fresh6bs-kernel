@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SB_CONTROL
+	tristate "sb-ctrl"
+	default n
+	depends on SB_VOTE
+	help
+		Say Y here to enable.
+		support for sec battery control API.
+		refer to API headers.
+
+if SB_CONTROL
+
+source "drivers/battery/control/step/Kconfig"
+source "drivers/battery/control/temp/Kconfig"
+
+endif # SB_CONTROL

@@ -1,0 +1,5 @@
+/ {
+	/* normal mode - default */
+	set0: set@0000 {
+	};
+};

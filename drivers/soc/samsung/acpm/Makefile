@@ -1,0 +1,16 @@
+#
+# Makefile for ACPM.
+#
+
+obj-$(CONFIG_EXYNOS_ACPM)    += exynos_acpm.o 
+exynos_acpm-$(CONFIG_EXYNOS_ACPM)    += acpm.o acpm_ipc.o
+exynos_acpm-$(CONFIG_EXYNOS_MFD_I3C)	+= acpm_mfd_i3c.o
+exynos_acpm-$(CONFIG_EXYNOS_MFD_SPMI)	+= acpm_mfd_spmi.o
+obj-$(CONFIG_EXYNOS_ACPM_S2D)	+= acpm_s2d.o
+obj-$(CONFIG_EXYNOS_ACPM_PLGDBG)	+= plugin_dbg.o
+obj-$(CONFIG_EXYNOS_ESCA)    += esca.o
+
+ifdef_any_of = $(filter-out undefined,$(foreach v,$(1),$(origin $(v))))
+ifeq ($(call ifdef_any_of,CONFIG_SOC_S5E9925 CONFIG_SOC_S5E5515),)
+obj-$(CONFIG_EXYNOS_FLEXPMU_DBG)            += flexpmu_dbg.o
+endif

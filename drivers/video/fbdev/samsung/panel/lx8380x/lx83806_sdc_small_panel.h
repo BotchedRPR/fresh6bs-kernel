@@ -1,0 +1,1368 @@
+/*
+ * linux/drivers/video/fbdev/exynos/panel/lx83806/lx83806_sdc_small_panel.h
+ *
+ * Header file for S6W36W5x01 Dimming Driver
+ *
+ * Copyright (c) 2016 Samsung Electronics
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2 as
+ * published by the Free Software Foundation.
+ */
+
+#ifndef __LX83806_SDC_SMALL_PANEL_H__
+#define __LX83806_SDC_SMALL_PANEL_H__
+#include "../panel.h"
+#include "../panel_drv.h"
+#include "lx8380x.h"
+#include "lx83806_sdc_small.h"
+#include "lx8380x_dimming.h"
+#include "lx83806_sdc_small_panel_dimming.h"
+#include "lx83806_sdc_small_resol.h"
+#ifdef CONFIG_USDM_PANEL_COPR
+#include "lx83806_sdc_small_panel_copr.h"
+#endif
+#ifdef CONFIG_USDM_PANEL_SELF_DISPLAY
+#include "lx83806_sdc_small_aod_panel.h"
+#include "../aod/aod_drv.h"
+#endif
+
+#ifdef CONFIG_USDM_PANEL_MAFPC
+#include "lx83806_sdc_small_abc_data.h"
+#endif
+
+#undef __pn_name__
+#define __pn_name__	sdc_small
+
+#undef __PN_NAME__
+#define __PN_NAME__	SDC_SMALL
+
+
+static u8 lx83806_sdc_small_brt_table[LX8380X_TOTAL_STEP][2] = {
+	// normal 5 x 51 + 1
+	{ 0x00, 0x1F }, { 0x00, 0x23 }, { 0x00, 0x26 }, { 0x00, 0x2C }, { 0x00, 0x32 },
+	{ 0x00, 0x36 }, { 0x00, 0x3A }, { 0x00, 0x3E }, { 0x00, 0x42 }, { 0x00, 0x44 },
+	{ 0x00, 0x45 }, { 0x00, 0x49 }, { 0x00, 0x4C }, { 0x00, 0x4D }, { 0x00, 0x51 },
+	{ 0x00, 0x52 }, { 0x00, 0x54 }, { 0x00, 0x56 }, { 0x00, 0x58 }, { 0x00, 0x59 },
+	{ 0x00, 0x5A }, { 0x00, 0x5B }, { 0x00, 0x5D }, { 0x00, 0x5F }, { 0x00, 0x60 },
+	{ 0x00, 0x61 }, { 0x00, 0x62 }, { 0x00, 0x63 }, { 0x00, 0x64 }, { 0x00, 0x65 },
+	{ 0x00, 0x66 }, { 0x00, 0x67 }, { 0x00, 0x68 }, { 0x00, 0x69 }, { 0x00, 0x6A },
+	{ 0x00, 0x6B }, { 0x00, 0x6C }, { 0x00, 0x6D }, { 0x00, 0x6E }, { 0x00, 0x6F },
+	{ 0x00, 0x70 }, { 0x00, 0x71 }, { 0x00, 0x72 }, { 0x00, 0x73 }, { 0x00, 0x74 },
+	{ 0x00, 0x75 }, { 0x00, 0x76 }, { 0x00, 0x77 }, { 0x00, 0x78 }, { 0x00, 0x79 },
+	{ 0x00, 0x7A }, { 0x00, 0x7B }, { 0x00, 0x7C }, { 0x00, 0x7D }, { 0x00, 0x7E },
+	{ 0x00, 0x7F }, { 0x00, 0x80 }, { 0x00, 0x81 }, { 0x00, 0x82 }, { 0x00, 0x83 },
+	{ 0x00, 0x84 }, { 0x00, 0x85 }, { 0x00, 0x86 }, { 0x00, 0x87 }, { 0x00, 0x88 },
+	{ 0x00, 0x89 }, { 0x00, 0x8A }, { 0x00, 0x8B }, { 0x00, 0x8C }, { 0x00, 0x8D },
+	{ 0x00, 0x8E }, { 0x00, 0x8F }, { 0x00, 0x90 }, { 0x00, 0x91 }, { 0x00, 0x92 },
+	{ 0x00, 0x93 }, { 0x00, 0x94 }, { 0x00, 0x95 }, { 0x00, 0x96 }, { 0x00, 0x97 },
+	{ 0x00, 0x98 }, { 0x00, 0x99 }, { 0x00, 0x9A }, { 0x00, 0x9B }, { 0x00, 0x9C },
+	{ 0x00, 0x9D }, { 0x00, 0x9E }, { 0x00, 0x9F }, { 0x00, 0xA0 }, { 0x00, 0xA1 },
+	{ 0x00, 0xA2 }, { 0x00, 0xA3 }, { 0x00, 0xA4 }, { 0x00, 0xA5 }, { 0x00, 0xA6 },
+	{ 0x00, 0xA7 }, { 0x00, 0xA8 }, { 0x00, 0xA9 }, { 0x00, 0xAA }, { 0x00, 0xAB },
+	{ 0x00, 0xAC }, { 0x00, 0xAD }, { 0x00, 0xAE }, { 0x00, 0xAF }, { 0x00, 0xB0 },
+	{ 0x00, 0xB1 }, { 0x00, 0xB2 }, { 0x00, 0xB3 }, { 0x00, 0xB4 }, { 0x00, 0xB5 },
+	{ 0x00, 0xB6 }, { 0x00, 0xB7 }, { 0x00, 0xB8 }, { 0x00, 0xB9 }, { 0x00, 0xBA },
+	{ 0x00, 0xBB }, { 0x00, 0xBC }, { 0x00, 0xBD }, { 0x00, 0xBE }, { 0x00, 0xBF },
+	{ 0x00, 0xC0 }, { 0x00, 0xC1 }, { 0x00, 0xC2 }, { 0x00, 0xC3 }, { 0x00, 0xC4 },
+	{ 0x00, 0xC5 }, { 0x00, 0xC6 }, { 0x00, 0xC7 }, { 0x00, 0xC8 }, { 0x00, 0xC9 },
+	{ 0x00, 0xCA }, { 0x00, 0xCB }, { 0x00, 0xCC }, { 0x00, 0xCD }, { 0x00, 0xCE },
+	{ 0x00, 0xCF }, { 0x00, 0xD0 }, { 0x00, 0xD1 }, { 0x00, 0xD2 }, { 0x00, 0xD3 },
+	{ 0x00, 0xD4 }, { 0x00, 0xD5 }, { 0x00, 0xD6 }, { 0x00, 0xD7 }, { 0x00, 0xD8 },
+	{ 0x00, 0xD9 }, { 0x00, 0xDA }, { 0x00, 0xDB }, { 0x00, 0xDC }, { 0x00, 0xDD },
+	{ 0x00, 0xDE }, { 0x00, 0xDF }, { 0x00, 0xE0 }, { 0x00, 0xE1 }, { 0x00, 0xE2 },
+	{ 0x00, 0xE3 }, { 0x00, 0xE4 }, { 0x00, 0xE5 }, { 0x00, 0xE6 }, { 0x00, 0xE7 },
+	{ 0x00, 0xE8 }, { 0x00, 0xE9 }, { 0x00, 0xEA }, { 0x00, 0xEB }, { 0x00, 0xEC },
+	{ 0x00, 0xED }, { 0x00, 0xEE }, { 0x00, 0xEF }, { 0x00, 0xF0 }, { 0x00, 0xF1 },
+	{ 0x00, 0xF2 }, { 0x00, 0xF3 }, { 0x00, 0xF4 }, { 0x00, 0xF5 }, { 0x00, 0xF6 },
+	{ 0x00, 0xF7 }, { 0x00, 0xF8 }, { 0x00, 0xF9 }, { 0x00, 0xFA }, { 0x00, 0xFB },
+	{ 0x00, 0xFC }, { 0x00, 0xFD }, { 0x00, 0xFE }, { 0x00, 0xFF }, { 0x01, 0x00 },
+	{ 0x01, 0x01 }, { 0x01, 0x02 }, { 0x01, 0x03 }, { 0x01, 0x04 }, { 0x01, 0x05 },
+	{ 0x01, 0x06 }, { 0x01, 0x07 }, { 0x01, 0x08 }, { 0x01, 0x09 }, { 0x01, 0x0A },
+	{ 0x01, 0x0B }, { 0x01, 0x0C }, { 0x01, 0x0D }, { 0x01, 0x0E }, { 0x01, 0x0F },
+	{ 0x01, 0x10 }, { 0x01, 0x11 }, { 0x01, 0x12 }, { 0x01, 0x13 }, { 0x01, 0x14 },
+	{ 0x01, 0x15 }, { 0x01, 0x16 }, { 0x01, 0x17 }, { 0x01, 0x18 }, { 0x01, 0x19 },
+	{ 0x01, 0x1A }, { 0x01, 0x1B }, { 0x01, 0x1C }, { 0x01, 0x1D }, { 0x01, 0x1E },
+	{ 0x01, 0x1F }, { 0x01, 0x20 }, { 0x01, 0x21 }, { 0x01, 0x22 }, { 0x01, 0x23 },
+	{ 0x01, 0x24 }, { 0x01, 0x25 }, { 0x01, 0x26 }, { 0x01, 0x27 }, { 0x01, 0x28 },
+	{ 0x01, 0x29 }, { 0x01, 0x2A }, { 0x01, 0x2B }, { 0x01, 0x2C }, { 0x01, 0x2D },
+	{ 0x01, 0x2E }, { 0x01, 0x2F }, { 0x01, 0x30 }, { 0x01, 0x31 }, { 0x01, 0x32 },
+	{ 0x01, 0x33 }, { 0x01, 0x34 }, { 0x01, 0x35 }, { 0x01, 0x36 }, { 0x01, 0x37 },
+	{ 0x01, 0x38 }, { 0x01, 0x39 }, { 0x01, 0x3A }, { 0x01, 0x3B }, { 0x01, 0x3C },
+	{ 0x01, 0x3D }, { 0x01, 0x3E }, { 0x01, 0x3F }, { 0x01, 0x40 }, { 0x01, 0x41 },
+	{ 0x01, 0x42 }, { 0x01, 0x43 }, { 0x01, 0x44 }, { 0x01, 0x45 }, { 0x01, 0x46 },
+	{ 0x01, 0x47 },
+	// hbm 5 x 68 + 4
+	{ 0x01, 0x49 }, { 0x01, 0x4B }, { 0x01, 0x4D }, { 0x01, 0x4F }, { 0x01, 0x51 },
+	{ 0x01, 0x53 }, { 0x01, 0x55 }, { 0x01, 0x57 }, { 0x01, 0x59 }, { 0x01, 0x5B },
+	{ 0x01, 0x5D }, { 0x01, 0x5F }, { 0x01, 0x61 }, { 0x01, 0x63 }, { 0x01, 0x65 },
+	{ 0x01, 0x67 }, { 0x01, 0x69 }, { 0x01, 0x6B }, { 0x01, 0x6D }, { 0x01, 0x6F },
+	{ 0x01, 0x71 }, { 0x01, 0x73 }, { 0x01, 0x75 }, { 0x01, 0x77 }, { 0x01, 0x79 },
+	{ 0x01, 0x7B }, { 0x01, 0x7D }, { 0x01, 0x7F }, { 0x01, 0x81 }, { 0x01, 0x83 },
+	{ 0x01, 0x87 }, { 0x01, 0x8B }, { 0x01, 0x8D }, { 0x01, 0x8F }, { 0x01, 0x91 },
+	{ 0x01, 0x93 }, { 0x01, 0x95 }, { 0x01, 0x97 }, { 0x01, 0x99 }, { 0x01, 0x9B },
+	{ 0x01, 0x9D }, { 0x01, 0x9F }, { 0x01, 0xA1 }, { 0x01, 0xA3 }, { 0x01, 0xA5 },
+	{ 0x01, 0xA7 }, { 0x01, 0xA9 }, { 0x01, 0xAB }, { 0x01, 0xAD }, { 0x01, 0xAF },
+	{ 0x01, 0xB1 }, { 0x01, 0xB3 }, { 0x01, 0xB5 }, { 0x01, 0xB7 }, { 0x01, 0xB9 },
+	{ 0x01, 0xBB }, { 0x01, 0xBD }, { 0x01, 0xBF }, { 0x01, 0xC1 }, { 0x01, 0xC5 },
+	{ 0x01, 0xC7 }, { 0x01, 0xC9 }, { 0x01, 0xCB }, { 0x01, 0xCD }, { 0x01, 0xCF },
+	{ 0x01, 0xD1 }, { 0x01, 0xD3 }, { 0x01, 0xD5 }, { 0x01, 0xD7 }, { 0x01, 0xD9 },
+	{ 0x01, 0xDB }, { 0x01, 0xDD }, { 0x01, 0xDF }, { 0x01, 0xE1 }, { 0x01, 0xE3 },
+	{ 0x01, 0xE5 }, { 0x01, 0xE7 }, { 0x01, 0xE9 }, { 0x01, 0xEB }, { 0x01, 0xED },
+	{ 0x01, 0xEF }, { 0x01, 0xF1 }, { 0x01, 0xF3 }, { 0x01, 0xF5 }, { 0x01, 0xF7 },
+	{ 0x01, 0xF9 }, { 0x01, 0xFB }, { 0x01, 0xFD }, { 0x01, 0xFF }, { 0x02, 0x01 },
+	{ 0x02, 0x03 }, { 0x02, 0x05 }, { 0x02, 0x07 }, { 0x02, 0x09 }, { 0x02, 0x0B },
+	{ 0x02, 0x0D }, { 0x02, 0x0F }, { 0x02, 0x11 }, { 0x02, 0x13 }, { 0x02, 0x15 },
+	{ 0x02, 0x17 }, { 0x02, 0x19 }, { 0x02, 0x1B }, { 0x02, 0x1D }, { 0x02, 0x1F },
+	{ 0x02, 0x21 }, { 0x02, 0x23 }, { 0x02, 0x25 }, { 0x02, 0x27 }, { 0x02, 0x29 },
+	{ 0x02, 0x2B }, { 0x02, 0x2D }, { 0x02, 0x2F }, { 0x02, 0x31 }, { 0x02, 0x35 },
+	{ 0x02, 0x37 }, { 0x02, 0x39 }, { 0x02, 0x3B }, { 0x02, 0x3D }, { 0x02, 0x3F },
+	{ 0x02, 0x41 }, { 0x02, 0x43 }, { 0x02, 0x45 }, { 0x02, 0x47 }, { 0x02, 0x49 },
+	{ 0x02, 0x4B }, { 0x02, 0x4D }, { 0x02, 0x4F }, { 0x02, 0x51 }, { 0x02, 0x53 },
+	{ 0x02, 0x55 }, { 0x02, 0x57 }, { 0x02, 0x59 }, { 0x02, 0x5B }, { 0x02, 0x5D },
+	{ 0x02, 0x5F }, { 0x02, 0x61 }, { 0x02, 0x63 }, { 0x02, 0x65 }, { 0x02, 0x67 },
+	{ 0x02, 0x69 }, { 0x02, 0x6B }, { 0x02, 0x6D }, { 0x02, 0x6F }, { 0x02, 0x71 },
+	{ 0x02, 0x73 }, { 0x02, 0x75 }, { 0x02, 0x77 }, { 0x02, 0x79 }, { 0x02, 0x7B },
+	{ 0x02, 0x7D }, { 0x02, 0x7F }, { 0x02, 0x81 }, { 0x02, 0x83 }, { 0x02, 0x85 },
+	{ 0x02, 0x87 }, { 0x02, 0x89 }, { 0x02, 0x8B }, { 0x02, 0x8D }, { 0x02, 0x8F },
+	{ 0x02, 0x91 }, { 0x02, 0x93 }, { 0x02, 0x95 }, { 0x02, 0x97 }, { 0x02, 0x99 },
+	{ 0x02, 0x9B }, { 0x02, 0x9D }, { 0x02, 0x9F }, { 0x02, 0xA1 }, { 0x02, 0xA3 },
+	{ 0x02, 0xA5 }, { 0x02, 0xA7 }, { 0x02, 0xA9 }, { 0x02, 0xAB }, { 0x02, 0xAD },
+	{ 0x02, 0xAF }, { 0x02, 0xB1 }, { 0x02, 0xB3 }, { 0x02, 0xB5 }, { 0x02, 0xB7 },
+	{ 0x02, 0xB9 }, { 0x02, 0xBB }, { 0x02, 0xBD }, { 0x02, 0xBF }, { 0x02, 0xC1 },
+	{ 0x02, 0xC3 }, { 0x02, 0xC5 }, { 0x02, 0xC7 }, { 0x02, 0xC9 }, { 0x02, 0xCB },
+	{ 0x02, 0xCD }, { 0x02, 0xCF }, { 0x02, 0xD1 }, { 0x02, 0xD3 }, { 0x02, 0xD5 },
+	{ 0x02, 0xD7 }, { 0x02, 0xD9 }, { 0x02, 0xDB }, { 0x02, 0xDD }, { 0x02, 0xDF },
+	{ 0x02, 0xE1 }, { 0x02, 0xE3 }, { 0x02, 0xE5 }, { 0x02, 0xE7 }, { 0x02, 0xE9 },
+	{ 0x02, 0xEB }, { 0x02, 0xED }, { 0x02, 0xEF }, { 0x02, 0xF1 }, { 0x02, 0xF3 },
+	{ 0x02, 0xF5 }, { 0x02, 0xF7 }, { 0x02, 0xF9 }, { 0x02, 0xFB }, { 0x02, 0xFD },
+	{ 0x02, 0xFF }, { 0x03, 0x01 }, { 0x03, 0x03 }, { 0x03, 0x05 }, { 0x03, 0x07 },
+	{ 0x03, 0x09 }, { 0x03, 0x0B }, { 0x03, 0x0D }, { 0x03, 0x0F }, { 0x03, 0x11 },
+	{ 0x03, 0x13 }, { 0x03, 0x15 }, { 0x03, 0x17 }, { 0x03, 0x19 }, { 0x03, 0x1B },
+	{ 0x03, 0x1D }, { 0x03, 0x1F }, { 0x03, 0x21 }, { 0x03, 0x23 }, { 0x03, 0x25 },
+	{ 0x03, 0x27 }, { 0x03, 0x29 }, { 0x03, 0x2B }, { 0x03, 0x2D }, { 0x03, 0x2F },
+	{ 0x03, 0x31 }, { 0x03, 0x33 }, { 0x03, 0x35 }, { 0x03, 0x37 }, { 0x03, 0x39 },
+	{ 0x03, 0x3B }, { 0x03, 0x3D }, { 0x03, 0x3F }, { 0x03, 0x41 }, { 0x03, 0x43 },
+	{ 0x03, 0x45 }, { 0x03, 0x47 }, { 0x03, 0x49 }, { 0x03, 0x4B }, { 0x03, 0x4D },
+	{ 0x03, 0x4F }, { 0x03, 0x51 }, { 0x03, 0x53 }, { 0x03, 0x55 }, { 0x03, 0x57 },
+	{ 0x03, 0x59 }, { 0x03, 0x5B }, { 0x03, 0x5D }, { 0x03, 0x5F }, { 0x03, 0x61 },
+	{ 0x03, 0x63 }, { 0x03, 0x65 }, { 0x03, 0x67 }, { 0x03, 0x69 }, { 0x03, 0x6B },
+	{ 0x03, 0x6D }, { 0x03, 0x6F }, { 0x03, 0x71 }, { 0x03, 0x73 }, { 0x03, 0x75 },
+	{ 0x03, 0x77 }, { 0x03, 0x79 }, { 0x03, 0x7B }, { 0x03, 0x7D }, { 0x03, 0x7F },
+	{ 0x03, 0x81 }, { 0x03, 0x83 }, { 0x03, 0x85 }, { 0x03, 0x87 }, { 0x03, 0x89 },
+	{ 0x03, 0x8B }, { 0x03, 0x8D }, { 0x03, 0x8F }, { 0x03, 0x91 }, { 0x03, 0x93 },
+	{ 0x03, 0x95 }, { 0x03, 0x97 }, { 0x03, 0x99 }, { 0x03, 0x9B }, { 0x03, 0x9D },
+	{ 0x03, 0x9F }, { 0x03, 0xA1 }, { 0x03, 0xA3 }, { 0x03, 0xA5 }, { 0x03, 0xA7 },
+	{ 0x03, 0xA9 }, { 0x03, 0xAB }, { 0x03, 0xAD }, { 0x03, 0xAF }, { 0x03, 0xB1 },
+	{ 0x03, 0xB3 }, { 0x03, 0xB5 }, { 0x03, 0xB7 }, { 0x03, 0xB9 }, { 0x03, 0xBB },
+	{ 0x03, 0xBD }, { 0x03, 0xBF }, { 0x03, 0xC1 }, { 0x03, 0xC3 }, { 0x03, 0xC5 },
+	{ 0x03, 0xC7 }, { 0x03, 0xC9 }, { 0x03, 0xCB }, { 0x03, 0xCD }, { 0x03, 0xCF },
+	{ 0x03, 0xD1 }, { 0x03, 0xD3 }, { 0x03, 0xD5 }, { 0x03, 0xD7 }, { 0x03, 0xD9 },
+	{ 0x03, 0xDB }, { 0x03, 0xDD }, { 0x03, 0xDF }, { 0x03, 0xE1 }, { 0x03, 0xE3 },
+	{ 0x03, 0xE5 }, { 0x03, 0xE7 }, { 0x03, 0xE9 }, { 0x03, 0xEB }, { 0x03, 0xED },
+	{ 0x03, 0xEF }, { 0x03, 0xF1 }, { 0x03, 0xF3 }, { 0x03, 0xF5 }, { 0x03, 0xF7 },
+	{ 0x03, 0xF9 }, { 0x03, 0xFB }, { 0x03, 0xFD }, { 0x03, 0xFF },
+};
+
+static u8 lx83806_sdc_small_13_brt_table[LX8380X_TOTAL_STEP][2] = {
+	// normal 5 x 51 + 1
+	{ 0x00, 0x1F }, { 0x00, 0x22 }, { 0x00, 0x26 }, { 0x00, 0x2A }, { 0x00, 0x2E },
+	{ 0x00, 0x34 }, { 0x00, 0x38 }, { 0x00, 0x3B }, { 0x00, 0x3F }, { 0x00, 0x42 },
+	{ 0x00, 0x44 }, { 0x00, 0x46 }, { 0x00, 0x49 }, { 0x00, 0x4B }, { 0x00, 0x4D },
+	{ 0x00, 0x4F }, { 0x00, 0x51 }, { 0x00, 0x53 }, { 0x00, 0x55 }, { 0x00, 0x56 },
+	{ 0x00, 0x57 }, { 0x00, 0x59 }, { 0x00, 0x5B }, { 0x00, 0x5C }, { 0x00, 0x5D },
+	{ 0x00, 0x5E }, { 0x00, 0x5F }, { 0x00, 0x60 }, { 0x00, 0x61 }, { 0x00, 0x62 },
+	{ 0x00, 0x63 }, { 0x00, 0x64 }, { 0x00, 0x65 }, { 0x00, 0x66 }, { 0x00, 0x67 },
+	{ 0x00, 0x68 }, { 0x00, 0x69 }, { 0x00, 0x6A }, { 0x00, 0x6B }, { 0x00, 0x6C },
+	{ 0x00, 0x6D }, { 0x00, 0x6D }, { 0x00, 0x6E }, { 0x00, 0x6F }, { 0x00, 0x70 },
+	{ 0x00, 0x71 }, { 0x00, 0x72 }, { 0x00, 0x73 }, { 0x00, 0x74 }, { 0x00, 0x75 },
+	{ 0x00, 0x76 }, { 0x00, 0x77 }, { 0x00, 0x78 }, { 0x00, 0x79 }, { 0x00, 0x79 },
+	{ 0x00, 0x7B }, { 0x00, 0x7C }, { 0x00, 0x7D }, { 0x00, 0x7E }, { 0x00, 0x7F },
+	{ 0x00, 0x80 }, { 0x00, 0x81 }, { 0x00, 0x82 }, { 0x00, 0x83 }, { 0x00, 0x84 },
+	{ 0x00, 0x85 }, { 0x00, 0x86 }, { 0x00, 0x87 }, { 0x00, 0x88 }, { 0x00, 0x89 },
+	{ 0x00, 0x8A }, { 0x00, 0x8B }, { 0x00, 0x8C }, { 0x00, 0x8D }, { 0x00, 0x8E },
+	{ 0x00, 0x8F }, { 0x00, 0x90 }, { 0x00, 0x91 }, { 0x00, 0x92 }, { 0x00, 0x93 },
+	{ 0x00, 0x94 }, { 0x00, 0x95 }, { 0x00, 0x96 }, { 0x00, 0x97 }, { 0x00, 0x98 },
+	{ 0x00, 0x99 }, { 0x00, 0x9A }, { 0x00, 0x9B }, { 0x00, 0x9C }, { 0x00, 0x9D },
+	{ 0x00, 0x9E }, { 0x00, 0xA0 }, { 0x00, 0xA1 }, { 0x00, 0xA2 }, { 0x00, 0xA3 },
+	{ 0x00, 0xA4 }, { 0x00, 0xA5 }, { 0x00, 0xA6 }, { 0x00, 0xA7 }, { 0x00, 0xA8 },
+	{ 0x00, 0xA9 }, { 0x00, 0xAA }, { 0x00, 0xAB }, { 0x00, 0xAC }, { 0x00, 0xAD },
+	{ 0x00, 0xAE }, { 0x00, 0xAF }, { 0x00, 0xB0 }, { 0x00, 0xB1 }, { 0x00, 0xB2 },
+	{ 0x00, 0xB3 }, { 0x00, 0xB4 }, { 0x00, 0xB5 }, { 0x00, 0xB6 }, { 0x00, 0xB8 },
+	{ 0x00, 0xB9 }, { 0x00, 0xBA }, { 0x00, 0xBB }, { 0x00, 0xBC }, { 0x00, 0xBD },
+	{ 0x00, 0xBE }, { 0x00, 0xBF }, { 0x00, 0xC0 }, { 0x00, 0xC1 }, { 0x00, 0xC2 },
+	{ 0x00, 0xC3 }, { 0x00, 0xC4 }, { 0x00, 0xC5 }, { 0x00, 0xC6 }, { 0x00, 0xC7 },
+	{ 0x00, 0xC8 }, { 0x00, 0xC9 }, { 0x00, 0xCA }, { 0x00, 0xCB }, { 0x00, 0xCC },
+	{ 0x00, 0xCD }, { 0x00, 0xCE }, { 0x00, 0xCF }, { 0x00, 0xD0 }, { 0x00, 0xD1 },
+	{ 0x00, 0xD2 }, { 0x00, 0xD3 }, { 0x00, 0xD4 }, { 0x00, 0xD5 }, { 0x00, 0xD6 },
+	{ 0x00, 0xD7 }, { 0x00, 0xD8 }, { 0x00, 0xDA }, { 0x00, 0xDB }, { 0x00, 0xDC },
+	{ 0x00, 0xDD }, { 0x00, 0xDF }, { 0x00, 0xE0 }, { 0x00, 0xE1 }, { 0x00, 0xE2 },
+	{ 0x00, 0xE3 }, { 0x00, 0xE4 }, { 0x00, 0xE5 }, { 0x00, 0xE6 }, { 0x00, 0xE7 },
+	{ 0x00, 0xE8 }, { 0x00, 0xE9 }, { 0x00, 0xEA }, { 0x00, 0xEB }, { 0x00, 0xEC },
+	{ 0x00, 0xED }, { 0x00, 0xEE }, { 0x00, 0xEF }, { 0x00, 0xF0 }, { 0x00, 0xF1 },
+	{ 0x00, 0xF2 }, { 0x00, 0xF3 }, { 0x00, 0xF4 }, { 0x00, 0xF5 }, { 0x00, 0xF6 },
+	{ 0x00, 0xF7 }, { 0x00, 0xF8 }, { 0x00, 0xF9 }, { 0x00, 0xFA }, { 0x00, 0xFB },
+	{ 0x00, 0xFC }, { 0x00, 0xFD }, { 0x00, 0xFE }, { 0x00, 0xFF }, { 0x01, 0x00 },
+	{ 0x01, 0x01 }, { 0x01, 0x02 }, { 0x01, 0x03 }, { 0x01, 0x04 }, { 0x01, 0x05 },
+	{ 0x01, 0x06 }, { 0x01, 0x07 }, { 0x01, 0x08 }, { 0x01, 0x09 }, { 0x01, 0x0A },
+	{ 0x01, 0x0B }, { 0x01, 0x0C }, { 0x01, 0x0D }, { 0x01, 0x0E }, { 0x01, 0x0F },
+	{ 0x01, 0x10 }, { 0x01, 0x11 }, { 0x01, 0x12 }, { 0x01, 0x13 }, { 0x01, 0x14 },
+	{ 0x01, 0x15 }, { 0x01, 0x16 }, { 0x01, 0x17 }, { 0x01, 0x18 }, { 0x01, 0x19 },
+	{ 0x01, 0x1A }, { 0x01, 0x1B }, { 0x01, 0x1C }, { 0x01, 0x1D }, { 0x01, 0x1E },
+	{ 0x01, 0x1F }, { 0x01, 0x20 }, { 0x01, 0x21 }, { 0x01, 0x22 }, { 0x01, 0x23 },
+	{ 0x01, 0x24 }, { 0x01, 0x25 }, { 0x01, 0x26 }, { 0x01, 0x27 }, { 0x01, 0x28 },
+	{ 0x01, 0x29 }, { 0x01, 0x2A }, { 0x01, 0x2B }, { 0x01, 0x2C }, { 0x01, 0x2D },
+	{ 0x01, 0x2E }, { 0x01, 0x2F }, { 0x01, 0x30 }, { 0x01, 0x31 }, { 0x01, 0x32 },
+	{ 0x01, 0x33 }, { 0x01, 0x34 }, { 0x01, 0x35 }, { 0x01, 0x36 }, { 0x01, 0x37 },
+	{ 0x01, 0x38 }, { 0x01, 0x39 }, { 0x01, 0x3A }, { 0x01, 0x3B }, { 0x01, 0x3C },
+	{ 0x01, 0x3D }, { 0x01, 0x3E }, { 0x01, 0x3F }, { 0x01, 0x40 }, { 0x01, 0x41 },
+	{ 0x01, 0x42 }, { 0x01, 0x43 }, { 0x01, 0x44 }, { 0x01, 0x45 }, { 0x01, 0x46 },
+	{ 0x01, 0x47 },
+		// hbm 5 x 68 + 4
+	{ 0x01, 0x49 }, { 0x01, 0x4B }, { 0x01, 0x4D }, { 0x01, 0x4F }, { 0x01, 0x51 },
+	{ 0x01, 0x53 }, { 0x01, 0x55 }, { 0x01, 0x57 }, { 0x01, 0x59 }, { 0x01, 0x5B },
+	{ 0x01, 0x5D }, { 0x01, 0x5F }, { 0x01, 0x61 }, { 0x01, 0x63 }, { 0x01, 0x65 },
+	{ 0x01, 0x67 }, { 0x01, 0x69 }, { 0x01, 0x6B }, { 0x01, 0x6D }, { 0x01, 0x6F },
+	{ 0x01, 0x71 }, { 0x01, 0x73 }, { 0x01, 0x75 }, { 0x01, 0x77 }, { 0x01, 0x79 },
+	{ 0x01, 0x7B }, { 0x01, 0x7D }, { 0x01, 0x7F }, { 0x01, 0x81 }, { 0x01, 0x83 },
+	{ 0x01, 0x87 }, { 0x01, 0x8B }, { 0x01, 0x8D }, { 0x01, 0x8F }, { 0x01, 0x91 },
+	{ 0x01, 0x93 }, { 0x01, 0x95 }, { 0x01, 0x97 }, { 0x01, 0x99 }, { 0x01, 0x9B },
+	{ 0x01, 0x9D }, { 0x01, 0x9F }, { 0x01, 0xA1 }, { 0x01, 0xA3 }, { 0x01, 0xA5 },
+	{ 0x01, 0xA7 }, { 0x01, 0xA9 }, { 0x01, 0xAB }, { 0x01, 0xAD }, { 0x01, 0xAF },
+	{ 0x01, 0xB1 }, { 0x01, 0xB3 }, { 0x01, 0xB5 }, { 0x01, 0xB7 }, { 0x01, 0xB9 },
+	{ 0x01, 0xBB }, { 0x01, 0xBD }, { 0x01, 0xBF }, { 0x01, 0xC1 }, { 0x01, 0xC5 },
+	{ 0x01, 0xC7 }, { 0x01, 0xC9 }, { 0x01, 0xCB }, { 0x01, 0xCD }, { 0x01, 0xCF },
+	{ 0x01, 0xD1 }, { 0x01, 0xD3 }, { 0x01, 0xD5 }, { 0x01, 0xD7 }, { 0x01, 0xD9 },
+	{ 0x01, 0xDB }, { 0x01, 0xDD }, { 0x01, 0xDF }, { 0x01, 0xE1 }, { 0x01, 0xE3 },
+	{ 0x01, 0xE5 }, { 0x01, 0xE7 }, { 0x01, 0xE9 }, { 0x01, 0xEB }, { 0x01, 0xED },
+	{ 0x01, 0xEF }, { 0x01, 0xF1 }, { 0x01, 0xF3 }, { 0x01, 0xF5 }, { 0x01, 0xF7 },
+	{ 0x01, 0xF9 }, { 0x01, 0xFB }, { 0x01, 0xFD }, { 0x01, 0xFF }, { 0x02, 0x01 },
+	{ 0x02, 0x03 }, { 0x02, 0x05 }, { 0x02, 0x07 }, { 0x02, 0x09 }, { 0x02, 0x0B },
+	{ 0x02, 0x0D }, { 0x02, 0x0F }, { 0x02, 0x11 }, { 0x02, 0x13 }, { 0x02, 0x15 },
+	{ 0x02, 0x17 }, { 0x02, 0x19 }, { 0x02, 0x1B }, { 0x02, 0x1D }, { 0x02, 0x1F },
+	{ 0x02, 0x21 }, { 0x02, 0x23 }, { 0x02, 0x25 }, { 0x02, 0x27 }, { 0x02, 0x29 },
+	{ 0x02, 0x2B }, { 0x02, 0x2D }, { 0x02, 0x2F }, { 0x02, 0x31 }, { 0x02, 0x35 },
+	{ 0x02, 0x37 }, { 0x02, 0x39 }, { 0x02, 0x3B }, { 0x02, 0x3D }, { 0x02, 0x3F },
+	{ 0x02, 0x41 }, { 0x02, 0x43 }, { 0x02, 0x45 }, { 0x02, 0x47 }, { 0x02, 0x49 },
+	{ 0x02, 0x4B }, { 0x02, 0x4D }, { 0x02, 0x4F }, { 0x02, 0x51 }, { 0x02, 0x53 },
+	{ 0x02, 0x55 }, { 0x02, 0x57 }, { 0x02, 0x59 }, { 0x02, 0x5B }, { 0x02, 0x5D },
+	{ 0x02, 0x5F }, { 0x02, 0x61 }, { 0x02, 0x63 }, { 0x02, 0x65 }, { 0x02, 0x67 },
+	{ 0x02, 0x69 }, { 0x02, 0x6B }, { 0x02, 0x6D }, { 0x02, 0x6F }, { 0x02, 0x71 },
+	{ 0x02, 0x73 }, { 0x02, 0x75 }, { 0x02, 0x77 }, { 0x02, 0x79 }, { 0x02, 0x7B },
+	{ 0x02, 0x7D }, { 0x02, 0x7F }, { 0x02, 0x81 }, { 0x02, 0x83 }, { 0x02, 0x85 },
+	{ 0x02, 0x87 }, { 0x02, 0x89 }, { 0x02, 0x8B }, { 0x02, 0x8D }, { 0x02, 0x8F },
+	{ 0x02, 0x91 }, { 0x02, 0x93 }, { 0x02, 0x95 }, { 0x02, 0x97 }, { 0x02, 0x99 },
+	{ 0x02, 0x9B }, { 0x02, 0x9D }, { 0x02, 0x9F }, { 0x02, 0xA1 }, { 0x02, 0xA3 },
+	{ 0x02, 0xA5 }, { 0x02, 0xA7 }, { 0x02, 0xA9 }, { 0x02, 0xAB }, { 0x02, 0xAD },
+	{ 0x02, 0xAF }, { 0x02, 0xB1 }, { 0x02, 0xB3 }, { 0x02, 0xB5 }, { 0x02, 0xB7 },
+	{ 0x02, 0xB9 }, { 0x02, 0xBB }, { 0x02, 0xBD }, { 0x02, 0xBF }, { 0x02, 0xC1 },
+	{ 0x02, 0xC3 }, { 0x02, 0xC5 }, { 0x02, 0xC7 }, { 0x02, 0xC9 }, { 0x02, 0xCB },
+	{ 0x02, 0xCD }, { 0x02, 0xCF }, { 0x02, 0xD1 }, { 0x02, 0xD3 }, { 0x02, 0xD5 },
+	{ 0x02, 0xD7 }, { 0x02, 0xD9 }, { 0x02, 0xDB }, { 0x02, 0xDD }, { 0x02, 0xDF },
+	{ 0x02, 0xE1 }, { 0x02, 0xE3 }, { 0x02, 0xE5 }, { 0x02, 0xE7 }, { 0x02, 0xE9 },
+	{ 0x02, 0xEB }, { 0x02, 0xED }, { 0x02, 0xEF }, { 0x02, 0xF1 }, { 0x02, 0xF3 },
+	{ 0x02, 0xF5 }, { 0x02, 0xF7 }, { 0x02, 0xF9 }, { 0x02, 0xFB }, { 0x02, 0xFD },
+	{ 0x02, 0xFF }, { 0x03, 0x01 }, { 0x03, 0x03 }, { 0x03, 0x05 }, { 0x03, 0x07 },
+	{ 0x03, 0x09 }, { 0x03, 0x0B }, { 0x03, 0x0D }, { 0x03, 0x0F }, { 0x03, 0x11 },
+	{ 0x03, 0x13 }, { 0x03, 0x15 }, { 0x03, 0x17 }, { 0x03, 0x19 }, { 0x03, 0x1B },
+	{ 0x03, 0x1D }, { 0x03, 0x1F }, { 0x03, 0x21 }, { 0x03, 0x23 }, { 0x03, 0x25 },
+	{ 0x03, 0x27 }, { 0x03, 0x29 }, { 0x03, 0x2B }, { 0x03, 0x2D }, { 0x03, 0x2F },
+	{ 0x03, 0x31 }, { 0x03, 0x33 }, { 0x03, 0x35 }, { 0x03, 0x37 }, { 0x03, 0x39 },
+	{ 0x03, 0x3B }, { 0x03, 0x3D }, { 0x03, 0x3F }, { 0x03, 0x41 }, { 0x03, 0x43 },
+	{ 0x03, 0x45 }, { 0x03, 0x47 }, { 0x03, 0x49 }, { 0x03, 0x4B }, { 0x03, 0x4D },
+	{ 0x03, 0x4F }, { 0x03, 0x51 }, { 0x03, 0x53 }, { 0x03, 0x55 }, { 0x03, 0x57 },
+	{ 0x03, 0x59 }, { 0x03, 0x5B }, { 0x03, 0x5D }, { 0x03, 0x5F }, { 0x03, 0x61 },
+	{ 0x03, 0x63 }, { 0x03, 0x65 }, { 0x03, 0x67 }, { 0x03, 0x69 }, { 0x03, 0x6B },
+	{ 0x03, 0x6D }, { 0x03, 0x6F }, { 0x03, 0x71 }, { 0x03, 0x73 }, { 0x03, 0x75 },
+	{ 0x03, 0x77 }, { 0x03, 0x79 }, { 0x03, 0x7B }, { 0x03, 0x7D }, { 0x03, 0x7F },
+	{ 0x03, 0x81 }, { 0x03, 0x83 }, { 0x03, 0x85 }, { 0x03, 0x87 }, { 0x03, 0x89 },
+	{ 0x03, 0x8B }, { 0x03, 0x8D }, { 0x03, 0x8F }, { 0x03, 0x91 }, { 0x03, 0x93 },
+	{ 0x03, 0x95 }, { 0x03, 0x97 }, { 0x03, 0x99 }, { 0x03, 0x9B }, { 0x03, 0x9D },
+	{ 0x03, 0x9F }, { 0x03, 0xA1 }, { 0x03, 0xA3 }, { 0x03, 0xA5 }, { 0x03, 0xA7 },
+	{ 0x03, 0xA9 }, { 0x03, 0xAB }, { 0x03, 0xAD }, { 0x03, 0xAF }, { 0x03, 0xB1 },
+	{ 0x03, 0xB3 }, { 0x03, 0xB5 }, { 0x03, 0xB7 }, { 0x03, 0xB9 }, { 0x03, 0xBB },
+	{ 0x03, 0xBD }, { 0x03, 0xBF }, { 0x03, 0xC1 }, { 0x03, 0xC3 }, { 0x03, 0xC5 },
+	{ 0x03, 0xC7 }, { 0x03, 0xC9 }, { 0x03, 0xCB }, { 0x03, 0xCD }, { 0x03, 0xCF },
+	{ 0x03, 0xD1 }, { 0x03, 0xD3 }, { 0x03, 0xD5 }, { 0x03, 0xD7 }, { 0x03, 0xD9 },
+	{ 0x03, 0xDB }, { 0x03, 0xDD }, { 0x03, 0xDF }, { 0x03, 0xE1 }, { 0x03, 0xE3 },
+	{ 0x03, 0xE5 }, { 0x03, 0xE7 }, { 0x03, 0xE9 }, { 0x03, 0xEB }, { 0x03, 0xED },
+	{ 0x03, 0xEF }, { 0x03, 0xF1 }, { 0x03, 0xF3 }, { 0x03, 0xF5 }, { 0x03, 0xF7 },
+	{ 0x03, 0xF9 }, { 0x03, 0xFB }, { 0x03, 0xFD }, { 0x03, 0xFF },
+};
+
+// maptbl table info
+
+static u8 lx83806_sdc_small_acl_control_table[MAX_LX8380X_ACL_RATIO][1] = {
+	[LX8380X_ACL_RATIO_0] = { 0x0C },
+	[LX8380X_ACL_RATIO_8] = { 0x0D },
+	[LX8380X_ACL_RATIO_15] = { 0x0E },
+};
+
+static u8 lx83806_sdc_small_elvss_temp_table[MAX_TEMP][1] = {
+	[GE_TEMP_1] = { 0x19 },
+	[EQ_TEMP_0] = { 0x00 },
+	[LE_TEMP_MINUS1] = { 0x8E },
+	[LE_TEMP_MINUS15] = { 0x94 },
+};
+
+#ifdef CONFIG_USDM_PANEL_MAFPC
+static u8 lx83806_sdc_small_mafpc_enable_table[2][1] = {
+	{ 0x00 },
+	{ 0x71 },
+};
+#endif
+
+static struct maptbl lx83806_sdc_small_maptbl[MAX_MAPTBL] = {
+	[GAMMA_MODE2_MAPTBL] = DEFINE_2D_MAPTBL(lx83806_sdc_small_brt_table, &DDI_FUNC(LX8380X_MAPTBL_INIT_GAMMA_MODE2_BRT), &OLED_FUNC(OLED_MAPTBL_GETIDX_GM2_BRT), &OLED_FUNC(OLED_MAPTBL_COPY_DEFAULT)),
+	[GAMMA_MODE2_13_MAPTBL] = DEFINE_2D_MAPTBL(lx83806_sdc_small_13_brt_table, &DDI_FUNC(LX8380X_MAPTBL_INIT_GAMMA_MODE2_BRT), &OLED_FUNC(OLED_MAPTBL_GETIDX_GM2_BRT), &OLED_FUNC(OLED_MAPTBL_COPY_DEFAULT)),
+	[ACL_CONTROL_MAPTBL] = DEFINE_2D_MAPTBL(lx83806_sdc_small_acl_control_table, &OLED_FUNC(OLED_MAPTBL_INIT_DEFAULT), &DDI_FUNC(LX8380X_MAPTBL_GETIDX_ACL_CONTROL), &OLED_FUNC(OLED_MAPTBL_COPY_DEFAULT)),
+	[ELVSS_TEMP_MAPTBL] = DEFINE_2D_MAPTBL(lx83806_sdc_small_elvss_temp_table, &OLED_FUNC(OLED_MAPTBL_INIT_DEFAULT), &DDI_FUNC(LX8380X_MAPTBL_GETIDX_TSET), &OLED_FUNC(OLED_MAPTBL_COPY_DEFAULT)),
+#ifdef CONFIG_USDM_PANEL_MAFPC
+	[MAFPC_ENA_MAPTBL] = DEFINE_2D_MAPTBL(lx83806_sdc_small_mafpc_enable_table, &OLED_FUNC(OLED_MAPTBL_INIT_DEFAULT), &DDI_FUNC(LX8380X_MAPTBL_GETIDX_MAFPC_ENABLE), &DDI_FUNC(LX8380X_MAPTBL_COPY_MAFPC_ENABLE)),
+	[MAFPC_CTRL_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_mafpc_ctrl, &OLED_FUNC(OLED_MAPTBL_INIT_DEFAULT), NULL, &DDI_FUNC(LX8380X_MAPTBL_COPY_MAFPC_CTRL)),
+	[MAFPC_SCALE_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_mafpc_scale, &OLED_FUNC(OLED_MAPTBL_INIT_DEFAULT), NULL, &DDI_FUNC(LX8380X_MAPTBL_COPY_MAFPC_SCALE)),
+	[MAFPC_IMG_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_mafpc_img, &OLED_FUNC(OLED_MAPTBL_INIT_DEFAULT), NULL, &DDI_FUNC(LX8380X_MAPTBL_COPY_MAFPC_IMG)),
+#endif
+	[REWRITE_RED_GAMMA_5NIT_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_rewrite_red_gamma_5nit, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_INIT_RED_GAMMA_5NIT), NULL, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_COPY_RED_GAMMA_5NIT)),
+	[REWRITE_GREEN_GAMMA_5NIT_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_rewrite_green_gamma_5nit, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_INIT_GREEN_GAMMA_5NIT), NULL, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_COPY_GREEN_GAMMA_5NIT)),
+	[REWRITE_BLUE_GAMMA_5NIT_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_rewrite_blue_gamma_5nit, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_INIT_BLUE_GAMMA_5NIT), NULL, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_COPY_BLUE_GAMMA_5NIT)),
+	[REWRITE_RED_GAMMA_600NIT_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_rewrite_red_gamma_600nit, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_INIT_RED_GAMMA_600NIT), NULL, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_COPY_RED_GAMMA_600NIT)),
+	[REWRITE_GREEN_GAMMA_600NIT_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_rewrite_green_gamma_600nit, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_INIT_GREEN_GAMMA_600NIT), NULL, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_COPY_GREEN_GAMMA_600NIT)),
+	[REWRITE_BLUE_GAMMA_600NIT_MAPTBL] = DEFINE_0D_MAPTBL(lx83806_sdc_small_rewrite_blue_gamma_600nit, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_INIT_BLUE_GAMMA_600NIT), NULL, &PANEL_FUNC(LX83806_SDC_SMALL_MAPTBL_COPY_BLUE_GAMMA_600NIT)),
+};
+
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_1msec, 1);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_5msec, 5);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_10msec, 10);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_17msec, 17);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_34msec, 34);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_42msec, 42);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_20msec, 20);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_66msec, 66);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_80msec, 80);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_wait_120msec, 120);
+
+static DEFINE_PANEL_TIMER_MDELAY(lx83806_sdc_small_wait_sleep_out_120msec, 120);
+static DEFINE_PANEL_TIMER_BEGIN(lx83806_sdc_small_wait_sleep_out_120msec,
+		TIMER_DLYINFO(&lx83806_sdc_small_wait_sleep_out_120msec));
+static DEFINE_PANEL_TIMER_MDELAY(lx83806_sdc_small_wait_sleep_out_76msec, 76);
+static DEFINE_PANEL_TIMER_BEGIN(lx83806_sdc_small_wait_sleep_out_76msec,
+		TIMER_DLYINFO(&lx83806_sdc_small_wait_sleep_out_76msec));
+
+static u8 LX83806_SDC_SMALL_SLEEP_OUT[] = { 0x11 };
+static u8 LX83806_SDC_SMALL_SLEEP_IN[] = { 0x10 };
+static u8 LX83806_SDC_SMALL_DISPLAY_OFF[] = { 0x28 };
+static u8 LX83806_SDC_SMALL_DISPLAY_ON[] = { 0x29 };
+static u8 LX83806_SDC_SMALL_TE_ON[] = { 0x35, 0x00, 0x00 };
+static u8 LX83806_SDC_SMALL_ENTER_IDLE[] = { 0x39 };
+static u8 LX83806_SDC_SMALL_EXIT_IDLE[] = { 0x38 };
+
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_sleep_out, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_SLEEP_OUT, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_sleep_in, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_SLEEP_IN, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_display_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_DISPLAY_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_display_off, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_DISPLAY_OFF, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_te_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TE_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_enter_idle, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_ENTER_IDLE, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_exit_idle, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_EXIT_IDLE, 0);
+
+static u8 LX83806_SDC_SMALL_TEST_A1_ON[] = { 0xB0, 0xA1 };
+static u8 LX83806_SDC_SMALL_TEST_A2_ON[] = { 0xB0, 0xA2 };
+static u8 LX83806_SDC_SMALL_TEST_A3_ON[] = { 0xB0, 0xA3 };
+static u8 LX83806_SDC_SMALL_TEST_A4_ON[] = { 0xB0, 0xA4 };
+static u8 LX83806_SDC_SMALL_TEST_A6_ON[] = { 0xB0, 0xA6 };
+static u8 LX83806_SDC_SMALL_TEST_A7_ON[] = { 0xB0, 0xA7 };
+static u8 LX83806_SDC_SMALL_TEST_OFF[] = { 0xB0, 0xCA };
+static u8 LX83806_SDC_SMALL_GPARA_ENABLE[] = { 0xA3, 0x01 };
+static u8 LX83806_SDC_SMALL_GPARA_DISABLE[] = {	0xA3, 0x00 };
+
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_test_a1_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TEST_A1_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_test_a2_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TEST_A2_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_test_a3_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TEST_A3_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_test_a4_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TEST_A4_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_test_a6_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TEST_A6_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_test_a7_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TEST_A7_ON, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_test_off, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TEST_OFF, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_gpara_enable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_GPARA_ENABLE, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_gpara_disable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_GPARA_DISABLE, 0);
+
+static u8 LX83806_SDC_SMALL_OTP_NOLOADING[] = {
+	0xF7,
+	0xAC
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_otp_noloading, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_OTP_NOLOADING, 0);
+
+static u8 LX83806_SDC_SMALL_DSI_CONFIG[] = {
+	0xB1,
+	0x10, 0x04, 0x00, 0x80, 0x80, 0x10
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_dsi_config, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_DSI_CONFIG, 0);
+
+static u8 LX83806_SDC_SMALL_CASET[] = {
+	0x2A,
+	0x00, 0x00, 0x01, 0xAF
+};
+static u8 LX83806_SDC_SMALL_PASET[] = {
+	0x2B,
+	0x00, 0x00, 0x01, 0xAF,
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_caset, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_CASET, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_paset, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PASET, 0);
+
+static u8 LX83806_SDC_SMALL_OSC_MIPI_SPEED[] = {
+	0x68,
+	0x15, 0x80, 0x00
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_osc_mipi_speed, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_OSC_MIPI_SPEED, 0);
+
+static u8 LX83806_SDC_SMALL_PNL_TIMING_GPARA_1[] = {
+	0xA0,
+	0x00, 0x11, 0xCD
+};
+
+static u8 LX83806_SDC_SMALL_PNL_TIMING_POWERON_1[] = {
+	0xCD,
+	0x03
+};
+
+static u8 LX83806_SDC_SMALL_PNL_TIMING_GPARA_2[] = {
+	0xA0,
+	0x00, 0x24, 0xCD
+};
+
+static u8 LX83806_SDC_SMALL_PNL_TIMING_POWERON_2[] = {
+	0xCD,
+	0x03
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_timing_gpara_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_TIMING_GPARA_1, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_timing_poweron_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_TIMING_POWERON_1, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_timing_gpara_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_TIMING_GPARA_2, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_timing_poweron_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_TIMING_POWERON_2, 0);
+
+static u8 LX83806_SDC_SMALL_PNL_TIMING_POWEROFF_SET[] = {
+	0x5D,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x10
+};
+
+static u8 LX83806_SDC_SMALL_PNL_TIMING_POWEROFF_1[] = {
+	0xCD,
+	0x24, 0x01, 0x02
+};
+
+static u8 LX83806_SDC_SMALL_PNL_TIMING_POWEROFF_2[] = {
+	0xCD,
+	0x11, 0x01, 0x00
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_timing_poweroff_set, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_TIMING_POWEROFF_SET, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_timing_poweroff_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_TIMING_POWEROFF_1, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_timing_poweroff_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_TIMING_POWEROFF_2, 0);
+
+static u8 LX83806_SDC_SMALL_PNL_DUMMY_PAD_1[] = {
+	0xBE,
+	0x2D, 0x16, 0x13
+};
+
+static u8 LX83806_SDC_SMALL_PNL_DUMMY_PAD_2[] = {
+	0xBF,
+	0x09, 0x16, 0x13
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_dummy_pad_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_DUMMY_PAD_1, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_pnl_dummy_pad_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_PNL_DUMMY_PAD_2, 0);
+
+static u8 LX83806_SDC_SMALL_TOUCH_VSYNC_ON[] = {
+	0xFC,
+	0x00, 0x00, 0x00, 0x03, 0x00, 0x01, 0x00
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_touch_vsync_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_TOUCH_VSYNC_ON, 0);
+
+static u8 LX83806_SDC_SMALL_INIT_SMOOTH_DIMMING_FRAME[] = {
+	0xB3,
+	0x02, 0xF0, 0x00, 0x00, 0x08
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_init_smooth_dimming_frame, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_INIT_SMOOTH_DIMMING_FRAME, 0);
+
+static u8 LX83806_SDC_SMALL_BL_SMOOTH_DIMMING_FRAME[] = {       // 8 or 32
+	0xB3,
+	0x02, 0xF0, 0x00, 0x00, 0x20
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_bl_smooth_dimming_frame, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_BL_SMOOTH_DIMMING_FRAME, 0);
+
+static u8 LX83806_SDC_SMALL_MXIP_ON[] = {
+	0xB7,
+	0xDC, 0x0F
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mxip_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MXIP_ON, 0);
+
+static u8 LX83806_SDC_SMALL_LFD_30[] = {
+	0x3D,
+	0x04, 0x04, 0x30
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_lfd_30, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_LFD_30, 0);
+
+static u8 LX83806_SDC_SMALL_LFD_1[] = {
+	0x3D,
+	0x04, 0x04, 0x31
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_lfd_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_LFD_1, 0);
+
+static u8 LX83806_SDC_SMALL_CLOCK_GATING[] = {
+	0x5D,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_clock_gating, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_CLOCK_GATING, 0);
+
+static u8 LX83806_SDC_SMALL_REF_VOLTAGE_MODE[] = {
+	0xFB,
+	0x00, 0x10
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_ref_voltage_mode, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REF_VOLTAGE_MODE, 0);
+
+static u8 LX83806_SDC_SMALL_GAMMA_WRCTRLD[] = {
+	0x53,
+	0x20,
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_wrctrld, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_GAMMA_WRCTRLD, 0);
+
+static u8 LX83806_SDC_SMALL_WRDISBV[] = {
+	0x51,
+	0x01, 0x47
+};
+static DEFINE_PKTUI(lx83806_sdc_small_wrdisbv, &lx83806_sdc_small_maptbl[GAMMA_MODE2_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_wrdisbv, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_WRDISBV, 0);
+
+static u8 LX83806_SDC_SMALL_13_WRDISBV[] = {
+	0x51,
+	0x01, 0x47
+};
+static DEFINE_PKTUI(lx83806_sdc_small_13_wrdisbv, &lx83806_sdc_small_maptbl[GAMMA_MODE2_13_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_13_wrdisbv, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_WRDISBV, 0);
+
+static u8 LX83806_SDC_SMALL_WRDISBV_600NIT[] = {
+	0x51,
+	0x01, 0x47
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_wrdisbv_600nit, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_WRDISBV_600NIT, 0);
+
+static u8 LX83806_SDC_SMALL_ACL_FOR_HBM_1[] = {
+	0xB1,
+	0x3C, 0xBC, 0xB2, 0x03, 0x00, 0x00, 0x1F, 0x5D,
+	0x57
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_acl_for_hbm_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_ACL_FOR_HBM_1, 0);
+
+static u8 LX83806_SDC_SMALL_ACL_FOR_HBM_2[] = {
+	0x55,
+	0x0F
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_acl_for_hbm_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_ACL_FOR_HBM_2, 0);
+
+static u8 LX83806_SDC_SMALL_LOW_TEMP_SET[] = {
+	0xCC,
+	0x7F, 0x80, 0x93, 0x98
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_low_temp_set, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_LOW_TEMP_SET, 0);
+
+static u8 LX83806_SDC_SMALL_ACL_CONTROL[] = {
+	0x55,
+	0x0C
+};
+static DEFINE_PKTUI(lx83806_sdc_small_acl_control, &lx83806_sdc_small_maptbl[ACL_CONTROL_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_acl_control, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_ACL_CONTROL, 0);
+
+static u8 LX83806_SDC_SMALL_ELVSS_TEMP[] = {
+	0x4D,
+	0x19
+
+};
+static DEFINE_PKTUI(lx83806_sdc_small_elvss_temp, &lx83806_sdc_small_maptbl[ELVSS_TEMP_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_elvss_temp, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_ELVSS_TEMP, 0x00);
+
+static u8 LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_5NIT_GPARA[] = {
+	0xA0,
+	0x00, 0x26, 0xB5
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_rewrite_green_gamma_5nit_gpara, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_5NIT_GPARA, 0);
+
+static u8 LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_5NIT_GPARA[] = {
+	0xA0,
+	0x00, 0x4C, 0xB5
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_rewrite_blue_gamma_5nit_gpara, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_5NIT_GPARA, 0);
+
+static u8 LX83806_SDC_SMALL_REWRITE_RED_GAMMA_5NIT[] = {
+	0xB5,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+
+};
+static DEFINE_PKTUI(lx83806_sdc_small_rewrite_red_gamma_5nit, &lx83806_sdc_small_maptbl[REWRITE_RED_GAMMA_5NIT_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_rewrite_red_gamma_5nit, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_RED_GAMMA_5NIT, 0x00);
+
+static u8 LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_5NIT[] = {
+	0xB5,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+
+};
+static DEFINE_PKTUI(lx83806_sdc_small_rewrite_green_gamma_5nit, &lx83806_sdc_small_maptbl[REWRITE_GREEN_GAMMA_5NIT_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_rewrite_green_gamma_5nit, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_5NIT, 0x00);
+
+static u8 LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_5NIT[] = {
+	0xB5,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+
+};
+static DEFINE_PKTUI(lx83806_sdc_small_rewrite_blue_gamma_5nit, &lx83806_sdc_small_maptbl[REWRITE_BLUE_GAMMA_5NIT_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_rewrite_blue_gamma_5nit, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_5NIT, 0x00);
+
+static u8 LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_600NIT_GPARA[] = {
+	0xA0,
+	0x00, 0x26, 0xB4
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_rewrite_green_gamma_600nit_gpara, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_600NIT_GPARA, 0);
+
+static u8 LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_600NIT_GPARA[] = {
+	0xA0,
+	0x00, 0x4C, 0xB4
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_rewrite_blue_gamma_600nit_gpara, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_600NIT_GPARA, 0);
+
+static u8 LX83806_SDC_SMALL_REWRITE_RED_GAMMA_600NIT[] = {
+	0xB4,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+
+};
+static DEFINE_PKTUI(lx83806_sdc_small_rewrite_red_gamma_600nit, &lx83806_sdc_small_maptbl[REWRITE_RED_GAMMA_600NIT_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_rewrite_red_gamma_600nit, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_RED_GAMMA_600NIT, 0x00);
+
+static u8 LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_600NIT[] = {
+	0xB4,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+
+};
+static DEFINE_PKTUI(lx83806_sdc_small_rewrite_green_gamma_600nit, &lx83806_sdc_small_maptbl[REWRITE_GREEN_GAMMA_600NIT_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_rewrite_green_gamma_600nit, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_GREEN_GAMMA_600NIT, 0x00);
+
+static u8 LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_600NIT[] = {
+	0xB4,
+	0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+
+};
+static DEFINE_PKTUI(lx83806_sdc_small_rewrite_blue_gamma_600nit, &lx83806_sdc_small_maptbl[REWRITE_BLUE_GAMMA_600NIT_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_rewrite_blue_gamma_600nit, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_REWRITE_BLUE_GAMMA_600NIT, 0x00);
+
+static u8 LX83806_SDC_SMALL_FACTORY_LPM_WRDISBV[] = {
+	0x51,
+	0x00, 0x88			// 50nit
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_factory_lpm_wrdisbv, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_FACTORY_LPM_WRDISBV, 0);
+
+static u8 LX83806_SDC_SMALL_13_FACTORY_LPM_WRDISBV[] = {
+	0x51,
+	0x00, 0x84			// 50nit
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_13_factory_lpm_wrdisbv, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_FACTORY_LPM_WRDISBV, 0);
+
+// for copr
+static u8 LX83806_SDC_SMALL_MCD_FSKIP_CG_ENABLE[] = {
+	0xB1,
+	0x7E, 0x00
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_fskip_cg_enable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_FSKIP_CG_ENABLE, 0);
+
+static u8 LX83806_SDC_SMALL_MCD_ON_1[] = {
+	0xB6,
+	0x07,
+};
+static u8 LX83806_SDC_SMALL_MCD_ON_2[] = {
+	0xBE,
+	0x03, 0x16, 0x16, 0x15, 0x15, 0x15, 0x15, 0x15,
+	0x15,
+};
+static u8 LX83806_SDC_SMALL_MCD_ON_3[] = {
+	0xBF,
+	0x09, 0x16, 0x16, 0x15, 0x15, 0x15, 0x20, 0x2A,
+	0x10, 0x0F, 0x27, 0x0E, 0x0D, 0x05, 0x04, 0x26
+};
+static u8 LX83806_SDC_SMALL_MCD_ON_4[] = {
+	0xCD,
+	0x80, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60,
+	0x60, 0x00, 0x00, 0x00, 0x03, 0x01, 0x1B
+};
+
+static u8 LX83806_SDC_SMALL_13_MCD_ON_2[] = {
+	0xBE,
+	0x2D, 0x16, 0x16, 0x15, 0x15, 0x15, 0x15, 0x15,
+	0x15,
+};
+static u8 LX83806_SDC_SMALL_13_MCD_ON_3[] = {
+	0xBF,
+	0x09, 0x16, 0x16, 0x15, 0x15, 0x15, 0x21, 0x2A,
+	0x10, 0x0F, 0x27, 0x0E, 0x0D, 0x05, 0x04, 0x26
+};
+static u8 LX83806_SDC_SMALL_13_MCD_ON_4[] = {
+	0xCD,
+	0x80, 0x60, 0x35, 0x60, 0x06, 0x33, 0x03, 0x60,
+	0x60, 0x00, 0x00, 0x00, 0x03, 0x01, 0x1B
+};
+
+static u8 LX83806_SDC_SMALL_MCD_ON_5[] = {
+	0xB9,
+	0x0D
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_on_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_ON_1, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_on_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_ON_2, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_on_3, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_ON_3, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_on_4, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_ON_4, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_on_5, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_ON_5, 0);
+
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_13_mcd_on_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_MCD_ON_2, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_13_mcd_on_3, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_MCD_ON_3, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_13_mcd_on_4, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_MCD_ON_4, 0);
+
+static u8 LX83806_SDC_SMALL_MCD_OFF_1[] = {
+	0xB9,
+	0x0F
+};
+static u8 LX83806_SDC_SMALL_MCD_OFF_2[] = {
+	0xBE,
+	0x03, 0x16, 0x16, 0x18, 0x1B, 0x1E, 0x19, 0x1C,
+	0x1F
+};
+static u8 LX83806_SDC_SMALL_MCD_OFF_3[] = {
+	0xBF,
+	0x09, 0x16, 0x16, 0x1D, 0x1A, 0x17, 0x20, 0x2A,
+	0x10, 0x0F, 0x27, 0x0E, 0x0D, 0x05, 0x04, 0x13
+};
+static u8 LX83806_SDC_SMALL_MCD_OFF_4[] = {
+	0xCD,
+	0x80, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60, 0x60,
+	0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+static u8 LX83806_SDC_SMALL_MCD_OFF_5[] = {
+	0xB6,
+	0x27
+};
+
+static u8 LX83806_SDC_SMALL_13_MCD_OFF_2[] = {
+	0xBE,
+	0x2D, 0x16, 0x16, 0x18, 0x1B, 0x1E, 0x19, 0x1C,
+	0x1F
+};
+static u8 LX83806_SDC_SMALL_13_MCD_OFF_3[] = {
+	0xBF,
+	0x09, 0x16, 0x16, 0x1D, 0x1A, 0x17, 0x21, 0x2A,
+	0x10, 0x0F, 0x27, 0x0E, 0x0D, 0x05, 0x04, 0x13
+};
+static u8 LX83806_SDC_SMALL_13_MCD_OFF_4[] = {
+	0xCD,
+	0x80, 0x60, 0x35, 0x60, 0x06, 0x33, 0x03, 0x60,
+	0x60, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+};
+
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_off_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_OFF_1, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_off_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_OFF_2, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_off_3, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_OFF_3, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_off_4, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_OFF_4, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mcd_off_5, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MCD_OFF_5, 0);
+
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_13_mcd_off_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_MCD_OFF_2, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_13_mcd_off_3, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_MCD_OFF_3, 0);
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_13_mcd_off_4, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_13_MCD_OFF_4, 0);
+
+#ifdef CONFIG_USDM_PANEL_MAFPC
+static u8 LX83806_SDC_SMALL_MAFPC_GRAM_ENABLE[] = {
+	0xB1, 0x7E,
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_gram_enable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_GRAM_ENABLE, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_SF_SEL_ENABLE[] = {
+	0x75, 0x40,
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_sf_sel_enable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_SF_SEL_ENABLE, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_SF_SEL_DISABLE[] = {
+	0x75, 0x00,
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_sf_sel_disable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_SF_SEL_DISABLE, 0);
+
+static DEFINE_PKTUI(lx83806_small_mafpc_default_img, &lx83806_sdc_small_maptbl[MAFPC_IMG_MAPTBL], 0);
+static DEFINE_VARIABLE_PACKET_WITH_OPTION(lx83806_small_mafpc_default_img, DSI_PKT_TYPE_WR_SR_FAST,
+	LX83806_SMALL_MAFPC_DEFAULT_IMG, 0, PKT_OPTION_SR_ALIGN_12);
+
+static u8 LX83806_SDC_SMALL_MAFPC_DISABLE[] = {
+	0x87, 0x00,
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_disable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_DISABLE, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_ENABLE[] = {
+	0x87,
+	0x71, 0x13, 0x08, 0x02, 0x00, 0x00, 0x66, 0x66, 0x66, 0xFF,
+	0xFF, 0xFF, 0x33, 0x33, 0x33, 0x33, 0x33, 0x33, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0x00, 0x00, 0x00, 0x40, 0x36, 0x2D, 0x90
+};
+static DECLARE_PKTUI(lx83806_sdc_small_mafpc_enable) = {
+	{ .offset = LX8380X_MAFPC_ENA_REG + 1, .maptbl = &lx83806_sdc_small_maptbl[MAFPC_ENA_MAPTBL] },
+	{ .offset = LX8380X_MAFPC_CTRL_CMD_OFFSET + 1, .maptbl = &lx83806_sdc_small_maptbl[MAFPC_CTRL_MAPTBL] },
+};
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_mafpc_enable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_ENABLE, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_CRC_BIST_ON[] = {
+	0xFD,
+	0x80, 0x00, 0xFF, 0xFF, 0xFF
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_crc_bist_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_CRC_BIST_ON, 0x00);
+
+static u8 LX83806_SDC_SMALL_MAFPC_CRC_BIST_OFF[] = {
+	0xFD,
+	0x00, 0x00, 0x00, 0x00
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_crc_bist_off, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_CRC_BIST_OFF, 0x00);
+
+static u8 LX83806_SDC_SMALL_MAFPC_CRC_ENABLE[] = {
+	0x87,
+	0x71, 0x19, 0x08, 0x02, 0x00, 0x00, 0x66, 0x66,
+	0x66, 0xFF, 0xFF, 0xFF, 0x33, 0x33, 0x33, 0x33,
+	0x33, 0x33, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
+	0x00, 0x00, 0x00, 0x40, 0x3C, 0x38, 0x40
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_crc_enable, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_CRC_ENABLE, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_LUMINANCE_UPDATE_1[] = {
+	0x51,
+	0x00, 0x00
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_luminance_update_1, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_LUMINANCE_UPDATE_1, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_LUMINANCE_UPDATE_2[] = {
+	0x51,
+	0x01, 0x47
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_luminance_update_2, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_LUMINANCE_UPDATE_2, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_SELF_MASK_OFF[] = {
+	0x7C,
+	0x00
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_self_mask_off, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_SELF_MASK_OFF, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_SELF_MASK_ON[] = {
+	0x7C,
+	0x01
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_self_mask_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_SELF_MASK_ON, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_CRC_ON[] = {
+	0xB1,
+	0x7E, 0x00, 0x00, 0x00, 0x18
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_crc_on, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_CRC_ON, 0);
+
+static u8 LX83806_SDC_SMALL_MAFPC_CRC_OFF[] = {
+	0xB1,
+	0x7E, 0x00, 0x00, 0x00, 0x10
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_crc_off, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_CRC_OFF, 0);
+
+static DEFINE_PANEL_UDELAY(lx83806_sdc_small_wait_1usec, 1);
+static DEFINE_PANEL_UDELAY(lx83806_sdc_small_wait_100usec, 100);
+static DEFINE_PANEL_MDELAY(lx83806_sdc_small_crc_wait, 34);
+
+static void *lx83806_sdc_small_mafpc_image_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_gram_enable),
+	&PKTINFO(lx83806_sdc_small_mafpc_sf_sel_enable),
+	&DLYINFO(lx83806_sdc_small_wait_1usec),
+	&PKTINFO(lx83806_sdc_small_mafpc_disable),
+	&DLYINFO(lx83806_sdc_small_wait_17msec),
+	&PKTINFO(lx83806_small_mafpc_default_img),
+	&DLYINFO(lx83806_sdc_small_wait_100usec),
+	&PKTINFO(lx83806_sdc_small_mafpc_sf_sel_disable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+};
+
+static void *lx83806_sdc_small_mafpc_on_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_enable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+};
+
+static void *lx83806_sdc_small_mafpc_off_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_disable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+};
+
+static void *lx83806_sdc_small_mafpc_check_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_crc_on),
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&PKTINFO(lx83806_sdc_small_test_a6_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_crc_bist_on),
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_crc_enable),
+	&PKTINFO(lx83806_sdc_small_mafpc_luminance_update_1),
+	&PKTINFO(lx83806_sdc_small_mafpc_luminance_update_2),
+	&PKTINFO(lx83806_sdc_small_mafpc_self_mask_off),
+	&DLYINFO(lx83806_sdc_small_crc_wait),
+	&lx8380x_restbl[RES_MAFPC_CRC],
+	&PKTINFO(lx83806_sdc_small_mafpc_crc_off),
+	&PKTINFO(lx83806_sdc_small_mafpc_disable),
+	&PKTINFO(lx83806_sdc_small_mafpc_self_mask_on),
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&PKTINFO(lx83806_sdc_small_test_a6_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_crc_bist_off),
+	&PKTINFO(lx83806_sdc_small_test_off),
+};
+
+static u8 LX83806_SDC_SMALL_MAFPC_SCALE_GPARAM[] = {
+	0xA0,
+	0x00, 0x09, 0x87,
+};
+static DEFINE_STATIC_PACKET(lx83806_sdc_small_mafpc_scale_gparam, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_SCALE_GPARAM, 0);
+
+
+static u8 LX83806_SDC_SMALL_MAFPC_SCALE[] = {
+	0x87,
+	0xFF, 0xFF, 0xFF,
+};
+static DEFINE_PKTUI(lx83806_sdc_small_mafpc_scale, &lx83806_sdc_small_maptbl[MAFPC_SCALE_MAPTBL], 1);
+static DEFINE_VARIABLE_PACKET(lx83806_sdc_small_mafpc_scale, DSI_PKT_TYPE_WR, LX83806_SDC_SMALL_MAFPC_SCALE, 0);
+#endif
+
+static DEFINE_RULE_BASED_COND(lx83806_sdc_small_cond_is_id_not_00,
+		PANEL_PROPERTY_PANEL_ID_3, NE, 0x00);
+static DEFINE_RULE_BASED_COND(lx83806_sdc_small_cond_is_id_ge_13,
+		PANEL_PROPERTY_PANEL_ID_3, GE, 0x13);
+static DEFINE_RULE_BASED_COND(lx83806_sdc_small_cond_is_id_ge_24,
+		PANEL_PROPERTY_PANEL_ID_3, GE, 0x24);
+static DEFINE_RULE_BASED_COND(lx83806_sdc_small_cond_is_id_le_02,
+		PANEL_PROPERTY_PANEL_ID_3, LE, 0x02);
+static DEFINE_RULE_BASED_COND(lx83806_sdc_small_cond_is_id_le_26,
+		PANEL_PROPERTY_PANEL_ID_3, LE, 0x26);
+
+static DEFINE_FUNC_BASED_COND(lx83806_sdc_small_cond_is_normal_to_hbm,
+	&DDI_FUNC(LX8380X_COND_IS_NORMAL_TO_HBM));
+static DEFINE_FUNC_BASED_COND(lx83806_sdc_small_cond_is_mtp_vaid,
+	&DDI_FUNC(LX8380X_COND_IS_MTP_VALID));
+static DEFINE_FUNC_BASED_COND(lx83806_sdc_small_cond_is_smooth_dimming_available,
+	&DDI_FUNC(LX8380X_COND_IS_SMOOTH_DIMMING_AVAILABLE));
+
+static struct seqinfo SEQINFO(lx83806_sdc_small_set_bl_param_seq);
+
+static void *lx83806_sdc_small_init_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_osc_mipi_speed),
+	&PKTINFO(lx83806_sdc_small_test_a6_on),
+	&PKTINFO(lx83806_sdc_small_otp_noloading),
+	&PKTINFO(lx83806_sdc_small_test_a1_on),
+	&PKTINFO(lx83806_sdc_small_dsi_config),
+	&PKTINFO(lx83806_sdc_small_test_off),
+
+	&PKTINFO(lx83806_sdc_small_sleep_out),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&TIMER_DLYINFO_BEGIN(lx83806_sdc_small_wait_sleep_out_120msec),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+		&TIMER_DLYINFO_BEGIN(lx83806_sdc_small_wait_sleep_out_76msec),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+
+#ifdef CONFIG_USDM_PANEL_MAFPC
+	&DLYINFO(lx83806_sdc_small_wait_10msec),
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_gram_enable),
+	&PKTINFO(lx83806_sdc_small_mafpc_sf_sel_enable),
+	&DLYINFO(lx83806_sdc_small_wait_1usec),
+	&PKTINFO(lx83806_sdc_small_mafpc_disable),
+	&DLYINFO(lx83806_sdc_small_wait_17msec),
+	&PKTINFO(lx83806_small_mafpc_default_img),
+	&DLYINFO(lx83806_sdc_small_wait_100usec),
+	&PKTINFO(lx83806_sdc_small_mafpc_sf_sel_disable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+#endif
+
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&TIMER_DLYINFO(lx83806_sdc_small_wait_sleep_out_120msec),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+		&TIMER_DLYINFO(lx83806_sdc_small_wait_sleep_out_76msec),
+		&PKTINFO(lx83806_sdc_small_test_a2_on),
+		&PKTINFO(lx83806_sdc_small_gpara_enable),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_gpara_1),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweron_1),
+		&PKTINFO(lx83806_sdc_small_gpara_disable),
+		&PKTINFO(lx83806_sdc_small_test_off),
+		&DLYINFO(lx83806_sdc_small_wait_17msec),
+		&PKTINFO(lx83806_sdc_small_test_a2_on),
+		&PKTINFO(lx83806_sdc_small_gpara_enable),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_gpara_2),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweron_2),
+		&PKTINFO(lx83806_sdc_small_gpara_disable),
+		&PKTINFO(lx83806_sdc_small_test_off),
+		&DLYINFO(lx83806_sdc_small_wait_34msec),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+
+	&PKTINFO(lx83806_sdc_small_caset),
+	&PKTINFO(lx83806_sdc_small_paset),
+
+	&PKTINFO(lx83806_sdc_small_test_a3_on),
+	&PKTINFO(lx83806_sdc_small_init_smooth_dimming_frame),
+	&PKTINFO(lx83806_sdc_small_test_off),
+
+	&PKTINFO(lx83806_sdc_small_test_a6_on),
+	&PKTINFO(lx83806_sdc_small_touch_vsync_on),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_24),
+		&PKTINFO(lx83806_sdc_small_ref_voltage_mode),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_24),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_le_02),
+		&PKTINFO(lx83806_sdc_small_test_a1_on),
+		&PKTINFO(lx83806_sdc_small_mxip_on),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_le_02),
+	&PKTINFO(lx83806_sdc_small_test_a2_on),
+	&PKTINFO(lx83806_sdc_small_low_temp_set),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_pnl_dummy_pad_1),
+		&PKTINFO(lx83806_sdc_small_pnl_dummy_pad_2),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&PKTINFO(lx83806_sdc_small_clock_gating),
+
+	&SEQINFO(lx83806_sdc_small_set_bl_param_seq),
+	&PKTINFO(lx83806_sdc_small_lfd_30),
+	&PKTINFO(lx83806_sdc_small_te_on),
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mcd_fskip_cg_enable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+#ifdef CONFIG_USDM_PANEL_COPR
+	&SEQINFO(lx83806_sdc_small_set_copr_seq),
+#endif
+};
+
+static void *lx83806_sdc_small_display_on_cmdtbl[] = {
+#ifdef CONFIG_USDM_PANEL_MAFPC
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_mafpc_enable),
+	&PKTINFO(lx83806_sdc_small_gpara_enable),
+	&PKTINFO(lx83806_sdc_small_mafpc_scale_gparam),
+	&PKTINFO(lx83806_sdc_small_mafpc_scale),
+	&PKTINFO(lx83806_sdc_small_gpara_disable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+#endif
+	&PKTINFO(lx83806_sdc_small_display_on),
+	&DLYINFO(lx83806_sdc_small_wait_20msec),
+};
+
+static void *lx83806_sdc_small_display_off_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_display_off),
+};
+
+static void *lx83806_sdc_small_check_condition_cmdtbl[] = {
+	&lx8380x_dmptbl[DUMP_ERROR_FLAG],
+	&lx8380x_dmptbl[DUMP_RDDPM],
+};
+
+static void *lx83806_sdc_small_exit_cmdtbl[] = {
+	&lx8380x_dmptbl[DUMP_ERROR_FLAG],
+	&lx8380x_dmptbl[DUMP_RDDPM_SLEEP_IN],
+#ifdef CONFIG_USDM_PANEL_DPUI
+	&lx8380x_dmptbl[DUMP_DSI_ERR],
+	&lx8380x_dmptbl[DUMP_SELF_DIAG],
+#endif
+	&PKTINFO(lx83806_sdc_small_display_off),
+	&DLYINFO(lx83806_sdc_small_wait_20msec),
+	&PKTINFO(lx83806_sdc_small_sleep_in),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&DLYINFO(lx83806_sdc_small_wait_120msec),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweroff_set),
+		&PKTINFO(lx83806_sdc_small_test_a2_on),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweroff_1),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweroff_set),
+		&PKTINFO(lx83806_sdc_small_test_off),
+		&DLYINFO(lx83806_sdc_small_wait_42msec),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweroff_set),
+		&PKTINFO(lx83806_sdc_small_test_a2_on),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweroff_2),
+		&PKTINFO(lx83806_sdc_small_pnl_timing_poweroff_set),
+		&PKTINFO(lx83806_sdc_small_test_off),
+		&DLYINFO(lx83806_sdc_small_wait_66msec),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+};
+
+static void *lx83806_sdc_small_set_bl_param_cmdtbl[] = {
+#ifdef CONFIG_USDM_PANEL_MAFPC
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_gpara_enable),
+	&PKTINFO(lx83806_sdc_small_mafpc_scale_gparam),
+	&PKTINFO(lx83806_sdc_small_mafpc_scale),
+	&PKTINFO(lx83806_sdc_small_gpara_disable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+#endif
+	&PKTINFO(lx83806_sdc_small_test_a3_on),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_smooth_dimming_available),
+		&PKTINFO(lx83806_sdc_small_bl_smooth_dimming_frame),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_smooth_dimming_available),
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&PKTINFO(lx83806_sdc_small_wrctrld),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_not_00),
+		&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+			&PKTINFO(lx83806_sdc_small_13_wrdisbv),
+		&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+			&PKTINFO(lx83806_sdc_small_wrdisbv),
+		&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_not_00),
+		&PKTINFO(lx83806_sdc_small_wrdisbv_600nit),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_not_00),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_normal_to_hbm),
+		&PKTINFO(lx83806_sdc_small_test_a3_on),
+		&PKTINFO(lx83806_sdc_small_acl_for_hbm_1),
+		&PKTINFO(lx83806_sdc_small_test_off),
+		&PKTINFO(lx83806_sdc_small_acl_for_hbm_2),
+		&DLYINFO(lx83806_sdc_small_wait_34msec),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_normal_to_hbm),
+	&PKTINFO(lx83806_sdc_small_acl_control),
+	&PKTINFO(lx83806_sdc_small_elvss_temp),
+
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_le_26),
+		&CONDINFO_IF(lx83806_sdc_small_cond_is_mtp_vaid),
+			&PKTINFO(lx83806_sdc_small_test_a7_on),
+			&PKTINFO(lx83806_sdc_small_gpara_enable),
+			&PKTINFO(lx83806_sdc_small_rewrite_red_gamma_5nit),
+			&PKTINFO(lx83806_sdc_small_rewrite_green_gamma_5nit_gpara),
+			&PKTINFO(lx83806_sdc_small_rewrite_green_gamma_5nit),
+			&PKTINFO(lx83806_sdc_small_rewrite_blue_gamma_5nit_gpara),
+			&PKTINFO(lx83806_sdc_small_rewrite_blue_gamma_5nit),
+			&PKTINFO(lx83806_sdc_small_rewrite_red_gamma_600nit),
+			&PKTINFO(lx83806_sdc_small_rewrite_green_gamma_600nit_gpara),
+			&PKTINFO(lx83806_sdc_small_rewrite_green_gamma_600nit),
+			&PKTINFO(lx83806_sdc_small_rewrite_blue_gamma_600nit_gpara),
+			&PKTINFO(lx83806_sdc_small_rewrite_blue_gamma_600nit),
+			&PKTINFO(lx83806_sdc_small_gpara_disable),
+			&PKTINFO(lx83806_sdc_small_test_off),
+		&CONDINFO_FI(lx83806_sdc_small_cond_is_mtp_vaid),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_le_26),
+};
+static DEFINE_SEQINFO(lx83806_sdc_small_set_bl_param_seq, lx83806_sdc_small_set_bl_param_cmdtbl);
+
+static void *lx83806_sdc_small_set_bl_cmdtbl[] = {
+	&SEQINFO(lx83806_sdc_small_set_bl_param_seq),
+};
+
+static void *lx83806_sdc_small_dummy_cmdtbl[] = {
+	NULL,
+};
+
+static void *lx83806_sdc_small_res_init_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_a7_on),
+	&lx8380x_restbl[RES_OCTA_ID],
+	&PKTINFO(lx83806_sdc_small_test_a6_on),
+	&lx8380x_restbl[RES_CHIP_ID],
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&lx8380x_restbl[RES_ID],
+	&lx8380x_restbl[RES_CELL_ID],
+	&lx8380x_restbl[RES_COORDINATE],
+
+	// read mtp 3times
+	&PKTINFO(lx83806_sdc_small_test_a7_on),
+	&PKTINFO(lx83806_sdc_small_gpara_enable),
+	&lx8380x_restbl[RES_RED_GAMMA_5NIT_TRY1],
+	&lx8380x_restbl[RES_GREEN_GAMMA_5NIT_TRY1],
+	&lx8380x_restbl[RES_BLUE_GAMMA_5NIT_TRY1],
+	&lx8380x_restbl[RES_RED_GAMMA_600NIT_TRY1],
+	&lx8380x_restbl[RES_GREEN_GAMMA_600NIT_TRY1],
+	&lx8380x_restbl[RES_BLUE_GAMMA_600NIT_TRY1],
+	&DLYINFO(lx83806_sdc_small_wait_1msec),
+	&lx8380x_restbl[RES_RED_GAMMA_5NIT_TRY2],
+	&lx8380x_restbl[RES_GREEN_GAMMA_5NIT_TRY2],
+	&lx8380x_restbl[RES_BLUE_GAMMA_5NIT_TRY2],
+	&lx8380x_restbl[RES_RED_GAMMA_600NIT_TRY2],
+	&lx8380x_restbl[RES_GREEN_GAMMA_600NIT_TRY2],
+	&lx8380x_restbl[RES_BLUE_GAMMA_600NIT_TRY2],
+	&DLYINFO(lx83806_sdc_small_wait_1msec),
+	&lx8380x_restbl[RES_RED_GAMMA_5NIT_TRY3],
+	&lx8380x_restbl[RES_GREEN_GAMMA_5NIT_TRY3],
+	&lx8380x_restbl[RES_BLUE_GAMMA_5NIT_TRY3],
+	&lx8380x_restbl[RES_RED_GAMMA_600NIT_TRY3],
+	&lx8380x_restbl[RES_GREEN_GAMMA_600NIT_TRY3],
+	&lx8380x_restbl[RES_BLUE_GAMMA_600NIT_TRY3],
+	&PKTINFO(lx83806_sdc_small_gpara_disable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+};
+
+static void *lx83806_sdc_small_alpm_enter_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&PKTINFO(lx83806_sdc_small_lfd_1),
+#if defined(CONFIG_USDM_FACTORY)
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_13_factory_lpm_wrdisbv),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_factory_lpm_wrdisbv),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+#else
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_13_wrdisbv),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_wrdisbv),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+#endif
+};
+
+static void *lx83806_sdc_small_alpm_exit_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_off),
+	&PKTINFO(lx83806_sdc_small_lfd_30),
+#if defined(CONFIG_USDM_FACTORY)
+	&SEQINFO(lx83806_sdc_small_set_bl_param_seq),
+#endif
+};
+
+static void *lx83806_sdc_small_mcd_on_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_a1_on),
+	&PKTINFO(lx83806_sdc_small_mcd_on_1),
+	&PKTINFO(lx83806_sdc_small_test_a2_on),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_13_mcd_on_2),
+		&PKTINFO(lx83806_sdc_small_13_mcd_on_3),
+		&PKTINFO(lx83806_sdc_small_13_mcd_on_4),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_mcd_on_2),
+		&PKTINFO(lx83806_sdc_small_mcd_on_3),
+		&PKTINFO(lx83806_sdc_small_mcd_on_4),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+	&PKTINFO(lx83806_sdc_small_mcd_on_5),
+	&PKTINFO(lx83806_sdc_small_test_off),
+};
+
+static void *lx83806_sdc_small_mcd_off_cmdtbl[] = {
+	&PKTINFO(lx83806_sdc_small_test_a2_on),
+	&PKTINFO(lx83806_sdc_small_mcd_off_1),
+	&DLYINFO(lx83806_sdc_small_wait_20msec),
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_13_mcd_off_2),
+		&PKTINFO(lx83806_sdc_small_13_mcd_off_3),
+		&PKTINFO(lx83806_sdc_small_13_mcd_off_4),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+		&PKTINFO(lx83806_sdc_small_mcd_off_2),
+		&PKTINFO(lx83806_sdc_small_mcd_off_3),
+		&PKTINFO(lx83806_sdc_small_mcd_off_4),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+	&PKTINFO(lx83806_sdc_small_test_a1_on),
+	&PKTINFO(lx83806_sdc_small_mcd_off_5),
+	&PKTINFO(lx83806_sdc_small_test_off),
+};
+
+static void *lx83806_sdc_small_set_fps_cmdtbl[] = {
+	&SEQINFO(lx83806_sdc_small_set_bl_param_seq),
+};
+
+
+#if defined(CONFIG_USDM_LPD_AUTO_BR)
+static void *lx83806_sdc_small_lpd_br_cmdtbl[] = {
+#ifdef CONFIG_USDM_PANEL_MAFPC
+	&PKTINFO(lx83806_sdc_small_test_a4_on),
+	&PKTINFO(lx83806_sdc_small_gpara_enable),
+	&PKTINFO(lx83806_sdc_small_mafpc_scale_gparam),
+	&PKTINFO(lx83806_sdc_small_mafpc_scale),
+	&PKTINFO(lx83806_sdc_small_gpara_disable),
+	&PKTINFO(lx83806_sdc_small_test_off),
+#endif
+	&CONDINFO_IF(lx83806_sdc_small_cond_is_id_not_00),
+		&CONDINFO_IF(lx83806_sdc_small_cond_is_id_ge_13),
+			&PKTINFO(lx83806_sdc_small_13_wrdisbv),
+		&CONDINFO_EL(lx83806_sdc_small_cond_is_id_ge_13),
+			&PKTINFO(lx83806_sdc_small_wrdisbv),
+		&CONDINFO_FI(lx83806_sdc_small_cond_is_id_ge_13),
+	&CONDINFO_EL(lx83806_sdc_small_cond_is_id_not_00),
+		&PKTINFO(lx83806_sdc_small_wrdisbv_600nit),
+	&CONDINFO_FI(lx83806_sdc_small_cond_is_id_not_00),
+};
+#endif
+
+static struct seqinfo lx83806_sdc_small_seqtbl[] = {
+	SEQINFO_INIT(PANEL_INIT_SEQ, lx83806_sdc_small_init_cmdtbl),
+	SEQINFO_INIT(PANEL_RES_INIT_SEQ, lx83806_sdc_small_res_init_cmdtbl),
+	SEQINFO_INIT(PANEL_SET_BL_SEQ, lx83806_sdc_small_set_bl_cmdtbl),
+
+	SEQINFO_INIT(PANEL_DISPLAY_ON_SEQ, lx83806_sdc_small_display_on_cmdtbl),
+	SEQINFO_INIT(PANEL_DISPLAY_OFF_SEQ, lx83806_sdc_small_display_off_cmdtbl),
+	SEQINFO_INIT(PANEL_DISPLAY_MODE_SEQ, lx83806_sdc_small_set_fps_cmdtbl),
+
+	SEQINFO_INIT(PANEL_CHECK_CONDITION_SEQ, lx83806_sdc_small_check_condition_cmdtbl),
+	SEQINFO_INIT(PANEL_DUMP_SEQ, lx83806_sdc_small_check_condition_cmdtbl),
+
+	SEQINFO_INIT(PANEL_EXIT_SEQ, lx83806_sdc_small_exit_cmdtbl),
+	SEQINFO_INIT(PANEL_MCD_ON_SEQ, lx83806_sdc_small_mcd_on_cmdtbl),
+	SEQINFO_INIT(PANEL_MCD_OFF_SEQ, lx83806_sdc_small_mcd_off_cmdtbl),
+	SEQINFO_INIT(PANEL_ALPM_SET_BL_SEQ, lx83806_sdc_small_alpm_enter_cmdtbl),
+	SEQINFO_INIT(PANEL_ALPM_EXIT_SEQ, lx83806_sdc_small_alpm_exit_cmdtbl),
+#ifdef CONFIG_USDM_PANEL_MAFPC
+	SEQINFO_INIT(PANEL_MAFPC_IMG_SEQ, lx83806_sdc_small_mafpc_image_cmdtbl),
+	SEQINFO_INIT(PANEL_MAFPC_CHECKSUM_SEQ, lx83806_sdc_small_mafpc_check_cmdtbl),
+	SEQINFO_INIT(PANEL_MAFPC_ON_SEQ, lx83806_sdc_small_mafpc_on_cmdtbl),
+	SEQINFO_INIT(PANEL_MAFPC_OFF_SEQ, lx83806_sdc_small_mafpc_off_cmdtbl),
+#endif
+#if defined(CONFIG_USDM_LPD_AUTO_BR)
+	SEQINFO_INIT(PANEL_LPD_BR_SEQ, lx83806_sdc_small_lpd_br_cmdtbl),
+#endif
+
+
+	SEQINFO_INIT(PANEL_DUMMY_SEQ, lx83806_sdc_small_dummy_cmdtbl),
+};
+
+struct common_panel_info lx83806_sdc_small_panel_info = {
+	.ldi_name = "lx83806",
+	.name = "lx83806_watch6_small",
+	.model = "AMB675TG01",
+	.vendor = "SDC",
+	.id = 0x400000,
+	.rev = 0,
+	.ddi_props = {
+		.gpara = DDI_SUPPORT_READ_GPARA | DDI_SUPPORT_POINT_GPARA | DDI_SUPPORT_2BYTE_GPARA,
+		.err_fg_recovery = false,
+		.support_vrr = true,
+	},
+	.ddi_ops = {
+		.get_cell_id = lx83806_get_cell_id,
+		.get_manufacture_date = lx83806_get_manufacture_date,
+		.get_octa_id = lx83806_get_octa_id,
+		.get_manufacture_code = lx8380x_get_manufacture_code,
+	},
+#if defined(CONFIG_USDM_PANEL_DISPLAY_MODE)
+	.common_panel_modes = &lx83806_sdc_small_display_modes,
+#endif
+	.mres = {
+		.nr_resol = ARRAY_SIZE(lx83806_sdc_small_default_resol),
+		.resol = lx83806_sdc_small_default_resol,
+	},
+	.vrrtbl = lx83806_sdc_small_default_vrrtbl,
+	.nr_vrrtbl = ARRAY_SIZE(lx83806_sdc_small_default_vrrtbl),
+	.maptbl = lx83806_sdc_small_maptbl,
+	.nr_maptbl = ARRAY_SIZE(lx83806_sdc_small_maptbl),
+	.seqtbl = lx83806_sdc_small_seqtbl,
+	.nr_seqtbl = ARRAY_SIZE(lx83806_sdc_small_seqtbl),
+	.rditbl = lx8380x_rditbl,
+	.nr_rditbl = ARRAY_SIZE(lx8380x_rditbl),
+	.restbl = lx8380x_restbl,
+	.nr_restbl = ARRAY_SIZE(lx8380x_restbl),
+	.dumpinfo = lx8380x_dmptbl,
+	.nr_dumpinfo = ARRAY_SIZE(lx8380x_dmptbl),
+	.panel_dim_info = {
+		[PANEL_BL_SUBDEV_TYPE_DISP] = &lx83806_sdc_panel_dimming_info,
+	},
+#ifdef CONFIG_USDM_PANEL_COPR
+	.copr_data = &lx83806_sdc_small_copr_data,
+#endif
+#ifdef CONFIG_USDM_PANEL_SELF_DISPLAY
+	.aod_tune = &lx83806_sdc_small_aod,
+#endif
+#ifdef CONFIG_USDM_PANEL_MAFPC
+	.mafpc_info = &lx83806_sdc_small_mafpc,
+#endif
+};
+#endif /* __LX83806_LX83806_SDC_SMALL_PANEL_H__ */

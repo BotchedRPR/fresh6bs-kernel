@@ -1,0 +1,10 @@
+#
+# motor drivers configuration
+#
+
+config VIB_DRV_ZTM730
+	tristate "ZTM730 motor"
+	default n
+	depends on I2C
+	help
+	 Say Y to enable the ztm730 motor driver

@@ -1,0 +1,11 @@
+menu "Samsung Battery drivers"
+
+source "drivers/battery/core/Kconfig"
+source "drivers/battery/control/Kconfig"
+source "drivers/battery/module/Kconfig"
+source "drivers/battery/fuelgauge/Kconfig"
+source "drivers/battery/charger/Kconfig"
+source "drivers/battery/wireless/Kconfig"
+source "drivers/battery/common/Kconfig"
+
+endmenu

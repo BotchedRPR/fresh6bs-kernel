@@ -1,0 +1,62 @@
+/ {
+	i3c_apm_pmic: syscon@12A60000 {
+		compatible = "i3c_apm_pmic", "syscon";
+		reg = <0x0 0x12A60000 0x1800>;
+	};
+
+	dbus_baaw: syscon@10820000 {
+		compatible = "dbus_baaw", "syscon";
+		reg = <0x0 0x10820000 0x4>;
+	};
+
+	pbus_baaw: syscon@10830000 {
+		compatible = "pbus_baaw", "syscon";
+		reg = <0x0 0x10830000 0x10000>;
+	};
+
+	wlbt_remap_base: syscon@10850000 {
+		compatible = "wlbt_remap", "syscon";
+		reg = <0x0 0x10850000 0x10000>;
+	};
+
+	boot_cfg: syscon@10860000 {
+		compatible = "boot_cfg", "syscon";
+		reg = <0x0 0x10860000 0x20000>;
+	};
+
+	scsc_wifibt: scsc_wifibt@129D0000 {
+		compatible = "samsung,scsc_wifibt";
+		memory-region = <&wifibt_if>;
+		/* Mailbox Registers */
+		reg = <0x0 0x129D0000 0x180>,	/* WLAN MAILBOX */
+			<0x0 0x129E0000 0x180>;	/* WPAN MAILBOX */
+		//SPI[18] 50 BLK_ALIVE INTREQ__ALIVE_WLBT_ACTIVE
+		//SPI[63] 95 BLK_ALIVE INTREQ__MAILBOX_
+		//SPI[64] 96 BLK_ALIVE INTREQ__MAILBOX_WPAN2AP
+		//SPI[195] 227 BLK_WLBT WB2AP_CFG_REQ
+		//SPI[196] 228 BLK_WLBT WB2AP_WDOG_RESET_REQ_IRQ
+		interrupts = <0 18 4>, <0 63 4>, <0 64 4>, <0 195 4>, <0 196 4>;
+		interrupt-names = "ALIVE", "MBOX_WLAN","MBOX_WPAN","CFG_REQ","WDOG";
+		samsung,syscon-phandle = <&pmu_system_controller>;
+		samsung,dbus_baaw-syscon-phandle = <&dbus_baaw>;
+		samsung,pbus_baaw-syscon-phandle = <&pbus_baaw>;
+		samsung,wlbt_remap-syscon-phandle = <&wlbt_remap_base>;
+		samsung,i3c_apm_pmic-syscon-phandle = <&i3c_apm_pmic>;
+		samsung,boot_cfg-syscon-phandle = <&boot_cfg>;
+		/* MIF / INT / CL0 */
+		/* this qos_table should be per-platform. Leave it here until we have multiple platfrom support */
+		qos_table = <
+		 421000 100000 200000 /* SCSC_QOS_MIN */
+		1352000 334000 667000 /* SCSC_QOS_MED */
+		2093000 533000 1200000 /* SCSC_QOS_MAX */
+		    >;
+	};
+
+	scsc_bt_qos {
+		compatible = "samsung,scsc_bt_qos";
+		samsung,qos_level_low = <1>;
+		samsung,qos_level_medium = <3>;
+		samsung,qos_level_high = <6>;
+		samsung,qos_timeout = <100>;
+	};
+};

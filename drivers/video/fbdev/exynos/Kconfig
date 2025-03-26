@@ -1,0 +1,5 @@
+if SOC_S5E5515
+
+source "drivers/video/fbdev/exynos/dpu30/Kconfig"
+
+endif # SOC_S5E5515

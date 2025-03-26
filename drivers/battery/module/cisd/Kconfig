@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SB_CISD
+	tristate "support for cisd"
+	default n
+	help
+	 Say Y to include support for cisd
+	 cisd means cell internal short detection

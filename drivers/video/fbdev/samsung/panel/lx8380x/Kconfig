@@ -1,0 +1,48 @@
+menuconfig USDM_PANEL_LX8380X
+	tristate "LX83805/6 DDI Panel Driver"
+	depends on USDM_PANEL
+	depends on USDM_PANEL_OLED_COMMON
+	default n
+	help
+		This enables LX8380X DDI dependent panel drivers of
+		common panel driver. say Y, if you have a panel based on
+		the LX8380X DDI.
+
+config USDM_PANEL_FRESH
+	bool "watch6 fresh"
+	depends on USDM_PANEL_LX8380X
+	default n
+
+config USDM_PANEL_WISE
+	bool "watch6 wise"
+	depends on USDM_PANEL_LX8380X
+	default n
+
+
+########## FOR KUNIT ##########
+
+config LX8380X_TEST
+	bool "KUnit test for lx83805 and lx83806 ddi driver"
+	depends on SEC_KUNIT
+	help
+	  TODO: Describe config fully.
+
+
+
+########## FOR KUNIT ##########
+
+config LX83805_WATCH6_LARGE_TEST
+	bool "KUnit test for tft_common ddi driver"
+	depends on SEC_KUNIT
+	help
+	  TODO: Describe config fully.
+
+
+
+########## FOR KUNIT ##########
+
+config LX83806_WATCH6_LARGE_TEST
+	bool "KUnit test for tft_common ddi driver"
+	depends on SEC_KUNIT
+	help
+	  TODO: Describe config fully.

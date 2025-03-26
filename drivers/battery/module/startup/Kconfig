@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SB_STARTUP
+	tristate "support for startup"
+	default n
+	depends on SB_PQUEUE
+	help
+	 Say Y to include support for startup

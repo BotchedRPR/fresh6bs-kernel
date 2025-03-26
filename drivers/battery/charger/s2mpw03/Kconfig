@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config MUIC_S2MPW03
+	tristate "S2MPW03 MUIC feature"
+	default n
+	depends on CHARGER_S2MPW03
+	depends on MUIC_NOTIFIER
+	help
+	  Say Y to include support
+	  for S2MPW03 charger RID detection feature.
+	  This feature replace MUIC fuctionality.

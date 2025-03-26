@@ -1,0 +1,25 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SB_STEP
+	tristate "sb-step"
+	default n
+	help
+		Say Y here to enable.
+		support for sec battery control-step API.
+		refer to API headers.
+
+config SB_STEP_WATCH5
+	tristate "sb-step-watch5"
+	default n
+	help
+		Say Y here to enable.
+		support for sec battery control-step-watch5 API.
+		refer to API headers.
+
+config SB_STEP_WATCH6
+	tristate "sb-step-watch6"
+	default n
+	help
+		Say Y here to enable.
+		support for sec battery control-step-watch6 API.
+		refer to API headers.

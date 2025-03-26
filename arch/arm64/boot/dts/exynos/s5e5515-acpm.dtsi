@@ -1,0 +1,67 @@
+/*
+* SAMSUNG EXYNOS5515 SoC ACPM device tree source
+*
+* Copyright (c) 2014 Samsung Electronics Co., Ltd.
+*		http://www.samsung.com
+*
+* SAMSUNG EXYNOS5515 SoC device nodes are listed in this file.
+* EXYNOS based board files can include this file and provide
+* values for board specfic bindings.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*/
+
+/ {
+	acpm {
+		compatible = "samsung,exynos-acpm";
+		#address-cells = <2>;
+		#size-cells = <1>;
+		acpm-ipc-channel = <4>;
+		use-plugin-library;
+		fvmap_offset = <0x20000>; 		/* FVMAP: 0x20000*/
+		reg = <0x0 0x12830000 0x1000>;		/* TIMER_APM */
+		reg-names = "timer_apm";
+		peritimer-cnt = <0xFFFF>;
+	};
+
+	acpm_ipc {
+		compatible = "samsung,exynos-acpm-ipc";
+		#address-cells = <2>;
+		#size-cells = <1>;
+		interrupts = <GIC_SPI INTREQ__MAILBOX_APM2AP IRQ_TYPE_LEVEL_HIGH>;	/* AP2APM MAILBOX SPI NUM*/
+		reg = <0x0 0x12900000 0x1000>,		/* AP2APM MAILBOX */
+			<0x0 0x12D00000 0x22000>;	/* APM SRAM */
+		initdata-base = <0x6900>;		/* AP share */
+		num-timestamps = <32>;
+		debug-log-level = <0>;
+		logging-period = <500>;
+		board-id = <0x10>;			/* unused */
+		board-rev = <0x0>;
+		dump-base = <0x12D03000>;
+		dump-size = <0x1F000>;			/* 136KB - 12KB(SACPM) = 124KB */
+		dram-dump-base = <0x90009000>;
+	};
+
+	exynos_flexpmu_dbg {
+		compatible = "samsung,exynos-flexpmu-dbg";
+		#address-cells = <2>;
+		#size-cells = <1>;
+		data-base = <0x12D1FB00>;
+		data-size = <0x400>;
+		mid-dvs-en = <0>;
+		reg = <0x0 0x12a80000 0x1000>;
+	};
+	
+	acpm_mfd_bus: acpm_mfd_bus@12A60000 {
+		compatible = "samsung,exynos-acpm-mfd-bus";
+		status = "okay";
+	};
+	
+	dmc_plugin {
+		compatible = "samsung,exynos-acpm-plg-dbg";
+		acpm-ipc-channel = <9>;
+	};
+
+};

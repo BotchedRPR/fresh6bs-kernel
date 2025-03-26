@@ -1,0 +1,15 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * EXYNOS DMA HEAP device tree source for reserved-memory
+ *
+ * Copyright (c) 2022 Samsung Electronics Co., Ltd.
+ */
+
+/ {
+	system_dma_heap {
+		compatible = "samsung,dma-heap-system";
+		dma-heap,name = "system";
+	};
+};
+
+

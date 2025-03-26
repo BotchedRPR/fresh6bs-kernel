@@ -1,0 +1,135 @@
+/*
+* SAMSUNG EXYNOS5515 SoC ACPM device tree source
+*
+* Copyright (c) 2014 Samsung Electronics Co., Ltd.
+*		http://www.samsung.com
+*
+* SAMSUNG EXYNOS5515 SoC device nodes are listed in this file.
+* EXYNOS based board files can include this file and provide
+* values for board specfic bindings.
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License version 2 as
+* published by the Free Software Foundation.
+*/
+
+#include <dt-bindings/soc/samsung/s5e5515-devfreq.h>
+#include <dt-bindings/soc/samsung/s5e5515-dm.h>
+#include <dt-bindings/soc/samsung/exynos_pm_qos.h>
+
+/ {
+	exynos_devfreq {
+		compatible = "samsung,exynos-devfreq-root";
+		#address-cells = <2>;
+		#size-cells = <1>;
+		ranges;
+
+		devfreq_0: devfreq_mif@17000010 {
+			compatible = "samsung,exynos-devfreq";
+			reg = <0x0 0x17000010 0x0>;
+			devfreq_type = <DEVFREQ_MIF>;
+			devfreq_domain_name = "MIF";
+			pm_qos_class = <PM_QOS_BUS_THROUGHPUT>; /* PM_QOS_BUS_THROUGHPUT */
+			pm_qos_class_max = <PM_QOS_BUS_THROUGHPUT_MAX>; /* PM_QOS_BUS_THROUGHPUT_MAX */
+			dm-index = <DM_MIF>;
+
+			/* Delay time */
+			use_delay_time = "false";
+
+			freq_info = <2093000 421000 1014000 421000 2093000 1539000>;
+			/* initial_freq, default_qos, suspend_freq, min_freq, max_freq reboot_freq */
+
+			/* Booting value */
+			boot_info = <40 2093000>;
+			/* boot_qos_timeout, boot_freq */
+
+			/* governor data */
+			governor = <SIMPLE_INTERACTIVE>;
+
+			bts_update = "false";
+			dfs_id = <ACPM_DVFS_MIF>;
+			acpm-ipc-channel = <1>;
+			use_acpm = "true";
+		};
+
+		devfreq_1: devfreq_int@17000020 {
+			compatible = "samsung,exynos-devfreq";
+			reg = <0x0 0x17000020 0x0>;
+			devfreq_type = <DEVFREQ_INT>;
+			devfreq_domain_name = "INT";
+			pm_qos_class = <PM_QOS_DEVICE_THROUGHPUT>; /* PM_QOS_DEVICE_THROUGHPUT */
+			pm_qos_class_max = <PM_QOS_DEVICE_THROUGHPUT_MAX>; /* PM_QOS_DEVICE_THROUGHPUT_MAX */
+			dm-index = <DM_INT>;
+
+			/* Delay time */
+			use_delay_time = "false";
+
+			freq_info = <533000 100000 100000 100000 533000 533000>;
+			/* <initial_freq, default_qos, suspend_freq, min, max, reboot_freq> */
+
+			/* Booting value */
+			boot_info = <0 533000>;
+			/* boot_qos_timeout, boot_freq */
+
+			/* governor data */
+			governor = <SIMPLE_INTERACTIVE>;
+
+			bts_update = "false";
+			dfs_id = <ACPM_DVFS_INT>;
+			acpm-ipc-channel = <1>;
+			use_acpm = "true";
+		};
+
+		devfreq_2: devfreq_disp@17000030 {
+			compatible = "samsung,exynos-devfreq";
+			reg = <0x0 0x17000030 0x0>;
+			devfreq_type = <DEVFREQ_DISP>;
+			devfreq_domain_name = "DISP";
+			pm_qos_class = <PM_QOS_DISPLAY_THROUGHPUT>; /* PM_QOS_DISPLAY_THROUGHPUT */
+			pm_qos_class_max = <PM_QOS_DISPLAY_THROUGHPUT_MAX>; /* PM_QOS_DISPLAY_THROUGHPUT_MAX */
+			dm-index = <DM_DISP>;
+
+			/* Delay time */
+			use_delay_time = "false";
+
+			freq_info = <267000 100000 1000000 100000 267000 267000>;
+			/* <initial_freq, default_qos, suspend_freq, min, max, reboot_freq> */
+
+			/* Booting value */
+			boot_info = <0 267000>;
+			/* boot_qos_timeout, boot_freq */
+
+			/* governor data */
+			governor = <SIMPLE_INTERACTIVE>;
+
+			bts_update = "false";
+			dfs_id = <ACPM_DVFS_DISP>;
+		};
+
+		devfreq_3: devfreq_aud@17000040 {
+			compatible = "samsung,exynos-devfreq";
+			reg = <0x0 0x17000040 0x0>;
+			devfreq_type = <DEVFREQ_AUD>;
+			devfreq_domain_name = "AUD";
+			pm_qos_class = <PM_QOS_AUD_THROUGHPUT>; /* PM_QOS_AUD_THROUGHPUT */
+			pm_qos_class_max = <PM_QOS_AUD_THROUGHPUT_MAX>; /* PM_QOS_AUD_THROUGHPUT_MAX */
+			dm-index = <DM_AUD>;
+
+			/* Delay time */
+			use_delay_time = "false";
+
+			freq_info = <200000 200000 200000 200000 1200000 200000>;
+			/* <initial, default_qos, suspend_freq, min, max, reboot_freq> */
+
+			/* Booting value */
+			boot_info = <0 200000>;
+			/* boot_qos_timeout, boot_freq */
+
+			/* governor data */
+			governor = <SIMPLE_INTERACTIVE>;
+
+			bts_update = "false";
+			dfs_id = <ACPM_DVFS_AUD>;
+		};
+	};
+};

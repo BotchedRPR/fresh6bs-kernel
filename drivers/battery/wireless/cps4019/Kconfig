@@ -1,0 +1,9 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config WIRELESS_CPS4019
+	tristate "CPS4019 wireless charger driver"
+	default n
+	depends on BATTERY_SAMSUNG && I2C
+	help
+		Say Y to enable support for CPS wireless charger.
+		cps4019 wireless charger driver.

@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+if BATTERY_SAMSUNG
+
+source "drivers/battery/fuelgauge/s2mpw03/Kconfig"
+
+endif # BATTERY_SAMSUNG

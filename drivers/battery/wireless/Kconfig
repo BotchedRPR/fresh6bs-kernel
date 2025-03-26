@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: GPL-2.0-only
+
+config SB_WRL
+	tristate "sb-wrl"
+	default n
+	help
+	  Say Y here to enable.
+	  support for sec battery wrl API.
+	  (module: wrl)
+	  refer to API headers.
+
+if BATTERY_SAMSUNG
+
+source "drivers/battery/wireless/p9222/Kconfig"
+source "drivers/battery/wireless/cps4019/Kconfig"
+
+endif # BATTERY_SAMSUNG
